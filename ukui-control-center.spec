@@ -1,9 +1,9 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
-Version:        2.0.2
+Version:        2.0.3
 Release:        1
 Summary:        utilities to configure the UKUI desktop
-License:        GPL-2.0
+License:        GPL-2+
 URL:            http://www.ukui.org
 Source0:        %{name}-%{version}.tar.gz
 
@@ -18,6 +18,7 @@ BuildRequires: kf5-kwindowsystem-devel
 BuildRequires: kf5-kwidgetsaddons-devel
 BuildRequires: kf5-kconfig-devel
 BuildRequires: kf5-kconfigwidgets-devel
+BuildRequires: kf5-ki18n-devel
 #BuildRequires: libkscreen
 BuildRequires: libkscreen-qt5-devel
 BuildRequires: qt5-qtdeclarative-devel
@@ -28,6 +29,7 @@ BuildRequires: libmatemixer-devel
 BuildRequires: libqtxdg-devel
 BuildRequires: qt5-qtmultimedia-devel
 BuildRequires: libxml2-devel
+BuildRequires: libcanberra-devel
 
 Requires: qt5-qtsvg-devel
 Requires: gsettings-qt-devel
@@ -39,6 +41,7 @@ Requires: kf5-kwindowsystem-devel
 Requires: kf5-kwidgetsaddons-devel
 Requires: kf5-kconfig-devel
 Requires: kf5-kconfigwidgets-devel
+Requires: kf5-ki18n-devel
 #Requires: libkscreen
 Requires: libkscreen-qt5-devel
 Requires: qt5-qtdeclarative-devel
@@ -50,6 +53,9 @@ Requires: libqtxdg-devel
 Requires: qt5-qtmultimedia-devel
 Requires: libxml2-devel
 Requires: network-manager-applet
+Requires: libcanberra-devel
+Requires: qt5-qtgraphicaleffects
+Requires: qt5-qtquickcontrols
 
 Recommends: qt5-qtquickcontrols
 
@@ -59,7 +65,8 @@ Suggests: ukui-power-manager
 Suggests: ukui-session-manager
 Suggests: ukui-screensaver
 Suggests: ukui-settings-daemon
-Suggests: qt5-qtgraphicaleffects
+#Suggests: qt5-qtgraphicaleffects
+
 
 %description
  The UKUI control center contains configuration applets for the UKUI desktop,
@@ -82,7 +89,6 @@ make INSTALL_ROOT=%{buildroot} install
 rm -rf $RPM_BUILD_ROOT
 
 %files 
-%doc debian/copyright debian/changelog
 %{_sysconfdir}/dbus-1/system.d/*
 %{_bindir}/launchSysDbus
 %{_bindir}/ukui-control-center
@@ -94,5 +100,5 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/ukui/faces/*
 
 %changelog
-* Thu Jul 9 2020 douyan <douyan@kylinos.cn> - 2.0.2-1
+* Thu Jul 9 2020 douyan <douyan@kylinos.cn> - 2.0.3-1
 - Init package for openEuler

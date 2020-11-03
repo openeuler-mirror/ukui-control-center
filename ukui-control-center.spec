@@ -1,6 +1,6 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
-Version:        2.0.3
+Version:        3.0.1
 Release:        1
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
@@ -30,7 +30,17 @@ BuildRequires: libqtxdg-devel
 BuildRequires: qt5-qtmultimedia-devel
 BuildRequires: libxml2-devel
 BuildRequires: libcanberra-devel
+BuildRequires: kf5-kcoreaddons-devel
+BuildRequires: kf5-kguiaddons-devel
+BuildRequires: mate-desktop-devel
+BuildRequires: libX11-devel
+BuildRequires: libxkbcommon-devel
+BuildRequires: libxkbfile-devel
+BuildRequires: boost-devel
+BuildRequires: libxcb-devel
 
+Requires: dconf
+Requires: qt5-qtimageformats
 Requires: qt5-qtsvg-devel
 Requires: gsettings-qt-devel
 Requires: glib2-devel
@@ -85,6 +95,19 @@ make
 rm -rf $RPM_BUILD_ROOT
 make INSTALL_ROOT=%{buildroot} install
 
+%post
+set -e
+glib-compile-schemas /usr/share/glib-2.0/schemas/
+
+systemctl enable ukui-group-manager.service
+systemctl start  ukui-group-manager.service
+chown root:root /usr/bin/checkuserpwd
+chmod u+s /usr/bin/checkuserpwd
+
+%preun
+systemctl disable ukui-group-manager.service
+systemctl stop ukui-group-manager.service
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -92,13 +115,22 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/dbus-1/system.d/*
 %{_bindir}/launchSysDbus
 %{_bindir}/ukui-control-center
-%{_prefix}/lib/control-center/*
+#%%{_prefix}/lib/control-center/*
+%{_libdir}/ukui-control-center/*
 %{_datadir}/applications/*
 %{_datadir}/dbus-1/system-services/*
 %{_datadir}/glib-2.0/schemas/*
 %{_datadir}/locale/zh_CN/LC_MESSAGES/*
 %{_datadir}/ukui/faces/*
+%{_datadir}/ukui-control-center/shell/res/i18n
+%{_sbindir}/group-manager-server
+%{_bindir}/checkuserpwd
+%{_prefix}/lib/systemd/system/ukui-group-manager.service
+
 
 %changelog
+* Thu Jul 9 2020 douyan <douyan@kylinos.cn> - 3.0.1-1
+- update to upstream version 3.0.1-1
+
 * Thu Jul 9 2020 douyan <douyan@kylinos.cn> - 2.0.3-1
 - Init package for openEuler

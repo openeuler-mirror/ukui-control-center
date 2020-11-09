@@ -38,6 +38,7 @@ BuildRequires: libxkbcommon-devel
 BuildRequires: libxkbfile-devel
 BuildRequires: boost-devel
 BuildRequires: libxcb-devel
+BuildRequires: qt5-linguist
 
 Requires: dconf
 Requires: qt5-qtimageformats

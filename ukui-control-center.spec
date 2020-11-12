@@ -39,6 +39,7 @@ BuildRequires: libxkbfile-devel
 BuildRequires: boost-devel
 BuildRequires: libxcb-devel
 BuildRequires: qt5-linguist
+BuildRequires: polkit-qt5-1-devel
 
 Requires: dconf
 Requires: qt5-qtimageformats
@@ -100,14 +101,14 @@ make INSTALL_ROOT=%{buildroot} install
 set -e
 glib-compile-schemas /usr/share/glib-2.0/schemas/
 
-systemctl enable ukui-group-manager.service
-systemctl start  ukui-group-manager.service
+#systemctl enable ukui-group-manager.service
+#systemctl start  ukui-group-manager.service
 chown root:root /usr/bin/checkuserpwd
 chmod u+s /usr/bin/checkuserpwd
 
 %preun
-systemctl disable ukui-group-manager.service
-systemctl stop ukui-group-manager.service
+#systemctl disable ukui-group-manager.service
+#systemctl stop ukui-group-manager.service
 
 %clean
 rm -rf $RPM_BUILD_ROOT

@@ -125,14 +125,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/locale/zh_CN/LC_MESSAGES/*
 %{_datadir}/ukui/faces/*
 %{_datadir}/ukui-control-center/shell/res/i18n
-%{_sbindir}/group-manager-server
+%{_bindir}/group-manager-server
 %{_bindir}/checkuserpwd
-%{_prefix}/lib/systemd/system/ukui-group-manager.service
-
+%{_unitdir}/ukui-group-manager.service
+%{_datadir}/polkit-1/actions/org.ukui.groupmanager.policy
 
 %changelog
 * Thu Jul 9 2020 douyan <douyan@kylinos.cn> - 3.0.1-1
-- update to upstream version 3.0.1-1
+- update to upstream version 3.0.0-1+1031
 
 * Thu Jul 9 2020 douyan <douyan@kylinos.cn> - 2.0.3-1
 - Init package for openEuler

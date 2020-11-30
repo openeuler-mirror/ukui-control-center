@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        1
+Release:        2
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -23,7 +23,7 @@ BuildRequires: kf5-ki18n-devel
 BuildRequires: libkscreen-qt5-devel
 BuildRequires: qt5-qtdeclarative-devel
 BuildRequires: dconf-devel
-BuildRequires: edid-decode 
+BuildRequires: edid-decode
 BuildRequires: redshift
 BuildRequires: libmatemixer-devel
 BuildRequires: libqtxdg-devel
@@ -58,7 +58,7 @@ Requires: kf5-ki18n-devel
 Requires: libkscreen-qt5-devel
 Requires: qt5-qtdeclarative-devel
 Requires: dconf-devel
-Requires: edid-decode 
+Requires: edid-decode
 Requires: redshift
 Requires: libmatemixer-devel
 Requires: libqtxdg-devel
@@ -68,6 +68,9 @@ Requires: network-manager-applet
 Requires: libcanberra-devel
 Requires: qt5-qtgraphicaleffects
 Requires: qt5-qtquickcontrols
+
+patch0: 0001-fix-system-overview-failed.patch
+patch1: 0002-fix-autologin-nopasswdlogin-failed.patch
 
 Recommends: qt5-qtquickcontrols
 
@@ -88,9 +91,11 @@ Suggests: ukui-settings-daemon
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
 
 %build
-qmake-qt5 
+qmake-qt5
 make
 
 %install
@@ -113,7 +118,7 @@ chmod u+s /usr/bin/checkuserpwd
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%files 
+%files
 %{_sysconfdir}/dbus-1/system.d/*
 %{_bindir}/launchSysDbus
 %{_bindir}/ukui-control-center
@@ -131,6 +136,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/polkit-1/actions/org.ukui.groupmanager.policy
 
 %changelog
+* Mon Nov 30 2020 lvhan <lvhan@kylinos.cn> - 3.0.1-2
+- fix autologin nopasswdlogin failed
+- fix system overview failed
+
 * Thu Jul 9 2020 douyan <douyan@kylinos.cn> - 3.0.1-1
 - update to upstream version 3.0.0-1+1031
 

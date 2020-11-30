@@ -1,0 +1,89 @@
+From 024f7bebf163348518ebbdf443c185dc66595a53 Mon Sep 17 00:00:00 2001
+From: myshow <296570182@qq.com>
+Date: Fri, 27 Nov 2020 17:34:23 +0800
+Subject: [PATCH 2/2] =?UTF-8?q?=E4=BF=AE=E5=A4=8D=E8=87=AA=E5=8A=A8?=
+ =?UTF-8?q?=E7=99=BB=E5=BD=95=E4=B8=8E=E5=85=8D=E5=AF=86=E7=99=BB=E5=BD=95?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ plugins/account/userinfo/userinfo.cpp | 3 ++-
+ plugins/account/userinfo/userinfo.ui  | 2 +-
+ registeredQDbus/main.cpp              | 2 +-
+ registeredQDbus/sysdbusregister.cpp   | 9 ++++++---
+ 4 files changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/plugins/account/userinfo/userinfo.cpp b/plugins/account/userinfo/userinfo.cpp
+index 49744f6..09183a4 100644
+--- a/plugins/account/userinfo/userinfo.cpp
++++ b/plugins/account/userinfo/userinfo.cpp
+@@ -355,8 +355,9 @@ void UserInfo::initComponent(){
+     if (!getuid()){
+         ui->changeTypeBtn->setEnabled(false);
+         ui->changeGroupBtn->setEnabled(false);
++        ui->changeValidBtn->setEnabled(false);
+         ui->autoLoginFrame->setVisible(false);
+-        ui->autoLoginFrame_2->setVisible(false);
++        ui->noPasswdFrame->setVisible(false);
+     }
+     //样式表
+ //    pluginWidget->setStyleSheet("background: #ffffff;");
+diff --git a/plugins/account/userinfo/userinfo.ui b/plugins/account/userinfo/userinfo.ui
+index 4793f7b..c6d0da8 100644
+--- a/plugins/account/userinfo/userinfo.ui
++++ b/plugins/account/userinfo/userinfo.ui
+@@ -471,7 +471,7 @@
+     </widget>
+    </item>
+    <item>
+-    <widget class="QFrame" name="autoLoginFrame_2">
++    <widget class="QFrame" name="noPasswdFrame">
+      <property name="minimumSize">
+       <size>
+        <width>550</width>
+diff --git a/registeredQDbus/main.cpp b/registeredQDbus/main.cpp
+index e6b1340..c2db36e 100644
+--- a/registeredQDbus/main.cpp
++++ b/registeredQDbus/main.cpp
+@@ -29,7 +29,7 @@ int main(int argc, char *argv[]){
+ 
+     QCoreApplication app(argc, argv);
+     app.setOrganizationName("Kylin Team");
+-    app.setApplicationName("ukcc-service");
++    app.setApplicationName("ukui-service");
+ 
+ 
+     QDBusConnection systemBus = QDBusConnection::systemBus();
+diff --git a/registeredQDbus/sysdbusregister.cpp b/registeredQDbus/sysdbusregister.cpp
+index 2985c57..670e5e5 100644
+--- a/registeredQDbus/sysdbusregister.cpp
++++ b/registeredQDbus/sysdbusregister.cpp
+@@ -87,7 +87,7 @@ QString SysdbusRegister::getNoPwdLoginStatus(){
+ 
+ //设置免密登录状态
+ void SysdbusRegister::setNoPwdLoginStatus(bool status,QString username){
+-
++    systemRun("groupadd -r nopasswdlogin");
+     QString cmd;
+     if(true == status){
+          cmd = QString("gpasswd  -a %1 nopasswdlogin").arg(username);
+@@ -102,10 +102,13 @@ void SysdbusRegister::setAutoLoginStatus(QString username)
+ {
+     QString filename = "/etc/lightdm/lightdm.conf";
+     QSharedPointer<QSettings>  autoSettings = QSharedPointer<QSettings>(new QSettings(filename, QSettings::IniFormat));
+-    autoSettings->beginGroup("SeatDefaults");
+-    autoSettings->clear();
+ 
++    autoSettings->beginGroup("SeatDefaults");
+     autoSettings->setValue("autologin-user", username);
++    autoSettings->setValue("autologin-session", "ukui");
+     autoSettings->endGroup();
+     autoSettings->sync();
++
++    systemRun("groupadd -r autologin");
++    systemRun(QString("gpasswd -a %1 autologin").arg(username));
+ }
+-- 
+2.29.2.windows.2
+

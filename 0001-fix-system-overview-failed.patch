@@ -1,0 +1,257 @@
+From e64005deb039312a914ce8dcb9f93f1f4ac6cf7c Mon Sep 17 00:00:00 2001
+From: myshow <296570182@qq.com>
+Date: Wed, 25 Nov 2020 17:34:20 +0800
+Subject: [PATCH 1/2] =?UTF-8?q?=E4=BF=AE=E5=A4=8D=E5=85=B3=E4=BA=8E?=
+ =?UTF-8?q?=E7=95=8C=E9=9D=A2=20=E5=86=85=E6=A0=B8=20cpu=20=E5=86=85?=
+ =?UTF-8?q?=E5=AD=98=20=E7=A1=AC=E7=9B=98=20=E4=BF=A1=E6=81=AF=E6=98=BE?=
+ =?UTF-8?q?=E7=A4=BA=E7=A9=BA=E7=99=BD=E7=9A=84=E9=97=AE=E9=A2=98?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ plugins/messages-task/about/about.cpp       | 53 +++++----------------
+ plugins/messages-task/about/about.pro       |  8 ++--
+ plugins/messages-task/about/cpuinfo.cpp     | 34 +++++++++++++
+ plugins/messages-task/about/cpuinfo.h       | 15 ++++++
+ plugins/messages-task/about/memoryentry.cpp | 32 ++++++++++---
+ plugins/messages-task/about/memoryentry.h   |  1 +
+ 6 files changed, 92 insertions(+), 51 deletions(-)
+ create mode 100644 plugins/messages-task/about/cpuinfo.cpp
+ create mode 100644 plugins/messages-task/about/cpuinfo.h
+
+diff --git a/plugins/messages-task/about/about.cpp b/plugins/messages-task/about/about.cpp
+index 9e8c290..a2dc766 100644
+--- a/plugins/messages-task/about/about.cpp
++++ b/plugins/messages-task/about/about.cpp
+@@ -22,6 +22,7 @@
+ #include "about.h"
+ #include "ui_about.h"
+ #include "memoryentry.h"
++#include "cpuinfo.h"
+ 
+ #include <QProcess>
+ #include <QFile>
+@@ -99,54 +100,22 @@ void About::setupDesktopComponent() {
+ 
+ void About::setupKernelCompenent() {
+     QString kernal = QSysInfo::kernelType() + " " + QSysInfo::kernelVersion();
+-    QString diskSize;
+-    QString memorySize;
+-    QString cpuType;
+-
+-    //ubuntukylin youker DBus interface
+-    QDBusInterface *youkerInterface;
+-    for (int i = 0; i < 2; i++) {
+-        youkerInterface = new QDBusInterface("com.kylin.assistant.systemdaemon",
+-                                             "/com/kylin/assistant/systemdaemon",
+-                                             "com.kylin.assistant.systemdaemon",
+-                                             QDBusConnection::systemBus(), this);
+-    }
+-    if (!youkerInterface->isValid()) {
+-        qCritical() << "Create youker Interface Failed When Get Computer info: " << QDBusConnection::systemBus().lastError();
+-        return;
+-    }
+-
+-    QDBusReply<QMap<QString, QVariant>> diskinfo;
+-    diskinfo  = youkerInterface ->call("get_harddisk_info");
+-    if (!diskinfo.isValid()) {
+-        qDebug() << "diskinfo is invalid" << endl;
+-    } else {
+-        QMap<QString, QVariant> res = diskinfo.value();
+-        diskSize = res["DiskCapacity"].toString();
+-        if (diskSize.contains("<1_1>")) {
+-            int index = diskSize.indexOf("<1_1>");
+-            QString disk1 = diskSize.left(index);
+-            diskSize = tr("Disk:") + disk1;
+-        }
+-    }
+-
+-    QDBusReply<QMap<QString, QVariant>> cpuinfo;
+-    cpuinfo  = youkerInterface ->call("get_cpu_info");
+-    if (!diskinfo.isValid()) {
+-        qDebug() << "cpuinfo is invalid" << endl;
+-    } else {
+-        QMap<QString, QVariant> res = cpuinfo.value();
+-        cpuType = res["CpuVersion"].toString();
+-    }
++    QString memorySize = "N/A";
++    QString cpuType = "N/A";
++    QString diskSize = "N/A";
+ 
+     MemoryEntry memoryInfo;
+     QStringList memory = memoryInfo.totalMemory();
+-    memorySize = memorySize + memory.at(0) + "(" + memory.at(1) + tr(" available") + ")";
++    memorySize = memory.at(0) + "(" + memory.at(1) + tr(" available") + ")";
+ 
+-    ui->cpuContent->setText(cpuType);
+-    ui->diskContent->setText(diskSize);
+     ui->kernalContent->setText(kernal);
+     ui->memoryContent->setText(memorySize);
++
++    ui->cpuContent->setText(cpuinfo::getCpuName());
++
++    QStorageInfo storage = QStorageInfo::root();
++    diskSize = QString("%1").arg(storage.bytesTotal()/1024.0f/1024/1024, 0, 'f', 1) + " GB";
++    ui->diskContent->setText(diskSize);
+ }
+ 
+ void About::setupVersionCompenent() {
+diff --git a/plugins/messages-task/about/about.pro b/plugins/messages-task/about/about.pro
+index b9898f6..cd789e1 100644
+--- a/plugins/messages-task/about/about.pro
++++ b/plugins/messages-task/about/about.pro
+@@ -17,12 +17,14 @@ INCLUDEPATH   +=  \
+ HEADERS += \
+     about.h \
+     entry.h \
+-    memoryentry.h
++    memoryentry.h \
++    cpuinfo.h
+ 
+ SOURCES += \
+     about.cpp \
+     entry.cpp \
+-    memoryentry.cpp
++    memoryentry.cpp \
++    cpuinfo.cpp
+ 
+ FORMS += \
+     about.ui
+@@ -30,4 +32,4 @@ FORMS += \
+ RESOURCES += \
+     res/img.qrc
+ 
+-INSTALLS += target
+\ No newline at end of file
++INSTALLS += target
+diff --git a/plugins/messages-task/about/cpuinfo.cpp b/plugins/messages-task/about/cpuinfo.cpp
+new file mode 100644
+index 0000000..ee24a95
+--- /dev/null
++++ b/plugins/messages-task/about/cpuinfo.cpp
+@@ -0,0 +1,34 @@
++#include <QFile>
++#include <QDebug>
++
++#include "cpuinfo.h"
++
++cpuinfo::cpuinfo(QObject *parent) : QObject(parent)
++{
++
++}
++
++QString cpuinfo::getCpuName()
++{
++    QString name = "";
++#ifdef Q_OS_LINUX
++    QFile file("/proc/cpuinfo");
++    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
++        return "no cpuinfo";
++
++    QString line = "N/A";
++    QTextStream in(&file);
++    line = in.readLine();
++    while (!in.atEnd()) {
++        line = in.readLine();
++        if (line.contains("model name"))
++            break;
++    }
++    //openEuler /proc/cpuinfo
++    //model name	: Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
++    name = QString(line).right(line.length() - (line.indexOf(":") + 2));
++#elif defined(Q_OS_FREEBSD)
++
++#endif
++    return name;
++}
+diff --git a/plugins/messages-task/about/cpuinfo.h b/plugins/messages-task/about/cpuinfo.h
+new file mode 100644
+index 0000000..2253ea6
+--- /dev/null
++++ b/plugins/messages-task/about/cpuinfo.h
+@@ -0,0 +1,15 @@
++#ifndef CPUINFO_H
++#define CPUINFO_H
++
++#include <QObject>
++
++class cpuinfo : public QObject
++{
++    Q_OBJECT
++public:
++    explicit cpuinfo(QObject *parent = nullptr);
++
++    static QString getCpuName();
++};
++
++#endif // CPUINFO_H
+diff --git a/plugins/messages-task/about/memoryentry.cpp b/plugins/messages-task/about/memoryentry.cpp
+index 4d93a3b..f1b1bef 100644
+--- a/plugins/messages-task/about/memoryentry.cpp
++++ b/plugins/messages-task/about/memoryentry.cpp
+@@ -22,6 +22,27 @@ MemoryEntry::MemoryEntry() : Entry(ki18n("Memory:"), totalMemory().at(1))
+ }
+ 
+ qlonglong MemoryEntry::calculateTotalRam()
++{
++    qlonglong ret = -1;
++#ifdef Q_OS_LINUX
++    struct sysinfo info;
++    if (sysinfo(&info) == 0)
++        // manpage "sizes are given as multiples of mem_unit bytes"
++        ret = qlonglong(info.totalswap) * info.mem_unit;
++#elif defined(Q_OS_FREEBSD)
++    /* Stuff for sysctl */
++    size_t len;
++
++    unsigned long memory;
++    len = sizeof(memory);
++    sysctlbyname("hw.physmem", &memory, &len, NULL, 0);
++
++    ret = memory;
++#endif
++    return ret;
++}
++
++qlonglong MemoryEntry::calculateavAilableRam()
+ {
+     qlonglong ret = -1;
+ #ifdef Q_OS_LINUX
+@@ -46,16 +67,15 @@ QStringList MemoryEntry::totalMemory()
+ {
+     QStringList res;
+     const qlonglong totalRam = calculateTotalRam();
++    const qlonglong availableRam = calculateavAilableRam();
+ 
+     if (totalRam > 0) {
+-        QString total =  KFormat().formatByteSize(totalRam, 0);
+-        QString available = KFormat().formatByteSize(totalRam, 1);
+-        if (total.toDouble() > available.toDouble()) {
+-            qSwap(total, available);
+-        }
++        QString total =  KFormat().formatByteSize(totalRam);
++        QString available = KFormat().formatByteSize(availableRam);
++
+         res << total << available;
+         return res;
+     }
+-//    return ki18n("Unknown amount of RAM", "Unknown");
++
+     return res;
+ }
+diff --git a/plugins/messages-task/about/memoryentry.h b/plugins/messages-task/about/memoryentry.h
+index d992a30..3ef792a 100644
+--- a/plugins/messages-task/about/memoryentry.h
++++ b/plugins/messages-task/about/memoryentry.h
+@@ -15,6 +15,7 @@ class MemoryEntry : public Entry
+ public:
+     MemoryEntry();
+     static qlonglong calculateTotalRam();
++    static qlonglong calculateavAilableRam();
+     static QStringList totalMemory();
+ };
+ 
+-- 
+2.29.2.windows.2
+

@@ -1,0 +1,83 @@
+From afa96c48b685bfe217014954aa6ef976cb2df418 Mon Sep 17 00:00:00 2001
+From: lvhan <lvhan@kylinos.cn>
+Date: Thu, 21 Jan 2021 11:30:52 +0800
+Subject: [PATCH] fix blueman tray and groupadd autologin
+
+---
+ plugins/personalized/desktop/desktop.cpp |  5 ++---
+ registeredQDbus/sysdbusregister.cpp      | 28 ++++++++++++++----------
+ 2 files changed, 19 insertions(+), 14 deletions(-)
+
+diff --git a/plugins/personalized/desktop/desktop.cpp b/plugins/personalized/desktop/desktop.cpp
+index d33d2de..2846244 100644
+--- a/plugins/personalized/desktop/desktop.cpp
++++ b/plugins/personalized/desktop/desktop.cpp
+@@ -146,14 +146,13 @@ void Desktop::initTranslation() {
+     iconMap.insert("ukui-flash-disk", "drive-removable-media");
+     iconMap.insert("ukui-power-manager-tray", "cs-power");
+     iconMap.insert("fcitx", "fcitx");
+-    iconMap.insert("blueman", "preferences-system-bluetooth");
++    iconMap.insert("blueman-tray", "preferences-system-bluetooth");
+     iconMap.insert("kylin-video", "kylin-video");
+     iconMap.insert("kylin-screenshoot", "kylin-screenshoot");
+     iconMap.insert("Onboard", "onboard");
+ 
+     disList<<"ukui-sidebar"<<"kylin-nm"<<"ukui-volume-control-applet-qt"<<"update-notifier"<<"software-update-available"
+-          <<"blueman-tray"<<"ukui-power-manager"<<"ukui-settings-daemon"<<"blueman-applet"
+-         <<"ErrorApplication"<<"livepatch";
++        <<"ukui-power-manager"<<"ukui-settings-daemon"<<"ErrorApplication"<<"livepatch";
+ }
+ 
+ void Desktop::setupComponent() {
+diff --git a/registeredQDbus/sysdbusregister.cpp b/registeredQDbus/sysdbusregister.cpp
+index 670e5e5..58d31db 100644
+--- a/registeredQDbus/sysdbusregister.cpp
++++ b/registeredQDbus/sysdbusregister.cpp
+@@ -87,12 +87,19 @@ QString SysdbusRegister::getNoPwdLoginStatus(){
+ 
+ //设置免密登录状态
+ void SysdbusRegister::setNoPwdLoginStatus(bool status,QString username){
+-    systemRun("groupadd -r nopasswdlogin");
++    QString filename = "/etc/lightdm/lightdm.conf";
++    QSettings  Settings(filename, QSettings::IniFormat);
++
++    Settings.beginGroup("SeatDefaults");
++    Settings.setValue("greeter-show-manual-login", "true");
++    Settings.endGroup();
++
++    systemRun("sudo groupadd -r nopasswdlogin");
+     QString cmd;
+     if(true == status){
+-         cmd = QString("gpasswd  -a %1 nopasswdlogin").arg(username);
++         cmd = QString("sudo gpasswd  -a %1 nopasswdlogin").arg(username);
+     } else{
+-        cmd = QString("gpasswd  -d %1 nopasswdlogin").arg(username);
++        cmd = QString("sudo gpasswd  -d %1 nopasswdlogin").arg(username);
+     }
+     systemRun(cmd);
+ }
+@@ -101,14 +108,13 @@ void SysdbusRegister::setNoPwdLoginStatus(bool status,QString username){
+ void SysdbusRegister::setAutoLoginStatus(QString username)
+ {
+     QString filename = "/etc/lightdm/lightdm.conf";
+-    QSharedPointer<QSettings>  autoSettings = QSharedPointer<QSettings>(new QSettings(filename, QSettings::IniFormat));
++    QSettings  Settings(filename, QSettings::IniFormat);
+ 
+-    autoSettings->beginGroup("SeatDefaults");
+-    autoSettings->setValue("autologin-user", username);
+-    autoSettings->setValue("autologin-session", "ukui");
+-    autoSettings->endGroup();
+-    autoSettings->sync();
++    Settings.beginGroup("SeatDefaults");
++    Settings.setValue("autologin-user", username);
++    Settings.setValue("autologin-session", "ukui");
++    Settings.endGroup();
+ 
+-    systemRun("groupadd -r autologin");
+-    systemRun(QString("gpasswd -a %1 autologin").arg(username));
++    systemRun("sudo groupadd -r autologin");
++    systemRun(QString("sudo gpasswd -a %1 autologin").arg(username));
+ }
+-- 
+2.29.2.windows.2
+

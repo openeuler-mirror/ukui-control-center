@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        3
+Release:        4
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -73,6 +73,7 @@ patch0: 0001-fix-system-overview-failed.patch
 patch1: 0002-fix-autologin-nopasswdlogin-failed.patch
 patch2: 0003-fix-dialog-pop-twice-after-modifying-resolution-bug.patch
 patch3: 0004-fix-effects-mode-not-available-bug.patch
+patch4: 0005-fix-blueman-tray-and-groupadd-autologin.patch
 
 Recommends: qt5-qtquickcontrols
 
@@ -97,6 +98,7 @@ Suggests: ukui-settings-daemon
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 qmake-qt5
@@ -140,6 +142,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/polkit-1/actions/org.ukui.groupmanager.policy
 
 %changelog
+* Thu Jan 21 2021 lvhan <lvhan@kylinos.cn> - 3.0.1-4
+- fix-blueman-tray-and-groupadd-autologin
+
 * Thu Dec 3 2020 lvhan <lvhan@kylinos.cn> - 3.0.1-3
 - fix dialog pop twice after modifying resolution
 - fix effects mode not available

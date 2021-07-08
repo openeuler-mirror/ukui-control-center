@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        4
+Release:        17
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -74,6 +74,18 @@ patch1: 0002-fix-autologin-nopasswdlogin-failed.patch
 patch2: 0003-fix-dialog-pop-twice-after-modifying-resolution-bug.patch
 patch3: 0004-fix-effects-mode-not-available-bug.patch
 patch4: 0005-fix-blueman-tray-and-groupadd-autologin.patch
+patch5: 0001-add-judgment-when-Bluetooth-does-not-exist.patch
+patch6:	0006-fix-Group-members-are-not-displayed.patch
+patch7: 0007-fix-vnc-crashed.patch
+patch8: 0008-fix-redeclaration-of-QStringList-usergroupList-in-ed.patch
+patch9: 0009-fix-layout-optimization.patch
+patch10: 0010-Added-translation-using-Weblate-Tibetan.patch
+patch11: 0011-power-add-sleep-function.patch
+patch12: 0012-window-add-title-icon.patch
+patch13: 0001-fix-compile-extern-C-error.patch
+patch14: fix_arm_root_user_crash.patch
+patch15: fix_add_group_failed_issue.patch
+patch16: fix_user_passwd_valid_time_setting_failed_issue.patch
 
 Recommends: qt5-qtquickcontrols
 
@@ -99,6 +111,18 @@ Suggests: ukui-settings-daemon
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
+%patch9 -p1
+%patch10 -p1
+%patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
+%patch15 -p1
+%patch16 -p1
 
 %build
 qmake-qt5
@@ -112,14 +136,16 @@ make INSTALL_ROOT=%{buildroot} install
 set -e
 glib-compile-schemas /usr/share/glib-2.0/schemas/
 
-#systemctl enable ukui-group-manager.service
-#systemctl start  ukui-group-manager.service
 chown root:root /usr/bin/checkuserpwd
 chmod u+s /usr/bin/checkuserpwd
 
+%systemd_post ukui-group-manager.service
+
 %preun
-#systemctl disable ukui-group-manager.service
-#systemctl stop ukui-group-manager.service
+%systemd_preun ukui-group-manager.service
+
+%postun
+%systemd_postun ukui-group-manager.service
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -142,6 +168,45 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/polkit-1/actions/org.ukui.groupmanager.policy
 
 %changelog
+* Mon Sep 6 2021 douyan <douyan@kylinos.cn> - 3.0.1-17
+- add fix_user_passwd_valid_time_setting_failed_issue.patch
+
+* Thu Sep 2 2021 douyan <douyan@kylinos.cn> - 3.0.1-16
+- fix add group failed issue
+
+* Wed Sep 1 2021 douyan <douyan@kylinos.cn> - 3.0.1-15
+- fix arm verion root user open ukui-control-center crash issue
+
+* Thu Jul 29 2021 tanyulong <tanyulong@kylinos.cn> - 3.0.1-14
+- solve compile build error
+
+* Fri Jul 16 2021 tanyulong<tanyulong@kylinos.cn> - 3.0.1-13
+- fix failed to view remote desktop
+
+* Tue Jul 13 2021 tanyulong<tanyulong@kylinos.cn> - 3.0.1-12
+- window add title icon
+
+* Mon Jul 12 2021 tanyulong<tanyulong@kylinos.cn> - 3.0.1-11
+- power add sleep function
+
+* Mon Jul 12 2021 tanyulong<tanyulong@kylinos.cn> - 3.0.1-10
+- Added translation using Weblate Tibetan add bo_CN.ts file
+
+* Mon Jul 12 2021 tanyulong<tanyulong@kylinos.cn> - 3.0.1-9
+- fix layout optimization
+
+* Fri Jul 09 2021 tanyulong<tanyulong@kylinos.cn> - 3.0.1-8
+- fix redeclaration of QStringList usergroupList
+
+* Fri Jul 09 2021 tanyulong<tanyulong@kylinos.cn> - 3.0.1-7
+- fix vnc crashed
+
+* Thu Jul 08 2021 tanyulong<tanyulong@kylinos.cn> - 3.0.1-6
+- fix-Group-members-are-not-displayed
+
+* Thu Jul 08 2021 tanyulong<tanyulong@kylinos.cn> - 3.0.1-5
+- add-judgment-when-Bluetooth-does-not-exist.patch
+
 * Thu Jan 21 2021 lvhan <lvhan@kylinos.cn> - 3.0.1-4
 - fix-blueman-tray-and-groupadd-autologin
 

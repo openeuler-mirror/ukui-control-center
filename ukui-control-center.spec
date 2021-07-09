@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        6
+Release:        7
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -76,6 +76,7 @@ patch3: 0004-fix-effects-mode-not-available-bug.patch
 patch4: 0005-fix-blueman-tray-and-groupadd-autologin.patch
 patch5: 0001-add-judgment-when-Bluetooth-does-not-exist.patch
 patch6:	0006-fix-Group-members-are-not-displayed.patch
+patch7: 0007-fix-vnc-crashed.patch
 
 Recommends: qt5-qtquickcontrols
 
@@ -103,6 +104,7 @@ Suggests: ukui-settings-daemon
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 %build
 qmake-qt5
@@ -146,6 +148,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/polkit-1/actions/org.ukui.groupmanager.policy
 
 %changelog
+* Fri Jul 09 2021 tanyulong<tanyulong@kylinos.cn> - 3.0.1-7
+- fix vnc crashed
+
 * Thu Jul 08 2021 tanyulong<tanyulong@kylinos.cn> - 3.0.1-6
 - fix-Group-members-are-not-displayed
 

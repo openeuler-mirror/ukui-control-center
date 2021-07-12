@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        8
+Release:        9
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -78,6 +78,8 @@ patch5: 0001-add-judgment-when-Bluetooth-does-not-exist.patch
 patch6:	0006-fix-Group-members-are-not-displayed.patch
 patch7: 0007-fix-vnc-crashed.patch
 patch8: 0008-fix-redeclaration-of-QStringList-usergroupList-in-ed.patch
+patch9: 0009-fix-layout-optimization.patch
+
 Recommends: qt5-qtquickcontrols
 
 Suggests: gsettings-desktop-schemas
@@ -106,6 +108,7 @@ Suggests: ukui-settings-daemon
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
 
 %build
 qmake-qt5
@@ -149,6 +152,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/polkit-1/actions/org.ukui.groupmanager.policy
 
 %changelog
+* Mon Jul 12 2021 tanyulong<tanyulong@kylinos.cn> - 3.0.1-9
+- fix layout optimization
+
 * Fri Jul 09 2021 tanyulong<tanyulong@kylinos.cn> - 3.0.1-8
 - fix redeclaration of QStringList usergroupList
 

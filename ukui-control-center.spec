@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        10
+Release:        11
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -80,6 +80,8 @@ patch7: 0007-fix-vnc-crashed.patch
 patch8: 0008-fix-redeclaration-of-QStringList-usergroupList-in-ed.patch
 patch9: 0009-fix-layout-optimization.patch
 patch10:0010-Added-translation-using-Weblate-Tibetan.patch
+patch11:0011-power-add-sleep-function.patch
+
 Recommends: qt5-qtquickcontrols
 
 Suggests: gsettings-desktop-schemas
@@ -110,6 +112,7 @@ Suggests: ukui-settings-daemon
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
+%patch11 -p1
 
 %build
 qmake-qt5
@@ -153,6 +156,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/polkit-1/actions/org.ukui.groupmanager.policy
 
 %changelog
+* Mon Jul 12 2021 tanyulong<tanyulong@kylinos.cn> - 3.0.1-11
+- power add sleep function
+
 * Mon Jul 12 2021 tanyulong<tanyulong@kylinos.cn> - 3.0.1-10
 - Added translation using Weblate Tibetan add bo_CN.ts file
 

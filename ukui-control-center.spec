@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        12
+Release:        13
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -82,6 +82,7 @@ patch9: 0009-fix-layout-optimization.patch
 patch10:0010-Added-translation-using-Weblate-Tibetan.patch
 patch11:0011-power-add-sleep-function.patch
 patch12:0012-window-add-title-icon.patch
+patch13:0013-fix-failed-to-view-remote-desktop.patch
 
 Recommends: qt5-qtquickcontrols
 
@@ -115,6 +116,7 @@ Suggests: ukui-settings-daemon
 %patch10 -p1
 %patch11 -p1
 %patch12 -p1
+%patch13 -p1
 
 %build
 qmake-qt5
@@ -158,6 +160,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/polkit-1/actions/org.ukui.groupmanager.policy
 
 %changelog
+* Fri Jul 16 2021 tanyulong<tanyulong@kylinos.cn> - 3.0.1-13
+- fix failed to view remote desktop
+
 * Tue Jul 13 2021 tanyulong<tanyulong@kylinos.cn> - 3.0.1-12
 - window add title icon
 

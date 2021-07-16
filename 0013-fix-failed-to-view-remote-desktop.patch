@@ -1,0 +1,238 @@
+From bd8712c40eedb0e5fa065f2619a52afc77885d42 Mon Sep 17 00:00:00 2001
+From: tanyulong <tanyulong@kylinos.cn>
+Date: Fri, 16 Jul 2021 14:17:00 +0800
+Subject: [PATCH]  fix failed to view remote desktop
+
+---
+ plugins/network/vino/sharemain.cpp | 71 ++++++++++++++++++++++++++----
+ plugins/network/vino/sharemain.h   |  6 +++
+ plugins/network/vino/vino.cpp      | 15 ++++---
+ plugins/network/vino/vino.h        |  1 +
+ 4 files changed, 79 insertions(+), 14 deletions(-)
+
+diff --git a/plugins/network/vino/sharemain.cpp b/plugins/network/vino/sharemain.cpp
+index c80b9ec..5579c77 100755
+--- a/plugins/network/vino/sharemain.cpp
++++ b/plugins/network/vino/sharemain.cpp
+@@ -18,6 +18,7 @@
+  *
+  */
+ #include "sharemain.h"
++#include <QProcess>
+ 
+ #include <QHBoxLayout>
+ #include <QAbstractButton>
+@@ -41,6 +42,22 @@ void ShareMain::initUI() {
+     mShareTitleLabel = new QLabel(tr("Share"), this);
+     mShareTitleLabel->setStyleSheet("QLabel{font-size: 18px; color: palette(windowText);}");
+ 
++    mEnableFrame = new QFrame(this);
++    mEnableFrame->setFrameShape(QFrame::Shape::Box);
++    mEnableFrame->setMinimumSize(550, 50);
++    mEnableFrame->setMaximumSize(960, 50);
++
++    QHBoxLayout * enableHLayout = new QHBoxLayout();
++
++    mEnableBox = new QCheckBox(this);
++    mEnableLabel = new QLabel(tr("Allow others to view your desktop"), this);
++    enableHLayout->addWidget(mEnableBox);
++    enableHLayout->addWidget(mEnableLabel);
++    enableHLayout->addStretch();
++
++    mEnableFrame->setLayout(enableHLayout);
++
++
+     mViewFrame = new QFrame(this);
+     mViewFrame->setFrameShape(QFrame::Shape::Box);
+     mViewFrame->setMinimumSize(550, 50);
+@@ -49,7 +66,8 @@ void ShareMain::initUI() {
+     QHBoxLayout * viewHLayout = new QHBoxLayout();
+ 
+     mViewBox = new QCheckBox(this);
+-    mViewLabel = new QLabel(tr("Allow others to view your desktop"), this);
++    mViewLabel = new QLabel(tr("Allow connection to control screen"), this);
++
+     viewHLayout->addWidget(mViewBox);
+     viewHLayout->addWidget(mViewLabel);
+     viewHLayout->addStretch();
+@@ -90,6 +108,7 @@ void ShareMain::initUI() {
+     mSecurityPwdFrame->setLayout(pwdHLayout);
+ 
+     mVlayout->addWidget(mShareTitleLabel);
++    mVlayout->addWidget(mEnableFrame);
+     mVlayout->addWidget(mViewFrame);
+ 
+     mVlayout->addWidget(mSecurityTitleLabel);
+@@ -109,7 +128,14 @@ void ShareMain::initConnection() {
+     QByteArray id(kVinoSchemas);
+     if (QGSettings::isSchemaInstalled(id)) {
+         mVinoGsetting = new QGSettings(kVinoSchemas, QByteArray(), this);
++      
++      	bool isShared = mVinoGsetting->get(kVinoViewOnlyKey).toBool();
++        bool secPwd = mVinoGsetting->get(kVinoPromptKey).toBool();
+ 
++        initShareStatus(!isShared, secPwd);
++        initEnableStatus();
++
++        connect(mEnableBox, &QCheckBox::clicked, this, &ShareMain::enableSlot);
+         connect(mViewBox, &QCheckBox::clicked, this, &ShareMain::viewBoxSlot);
+         connect(mPwdLineEdit, &QLineEdit::textChanged, this, &ShareMain::pwdInputSlot);
+         connect(mBtnGroup, QOverload<int>::of(&QButtonGroup::buttonClicked),
+@@ -117,9 +143,6 @@ void ShareMain::initConnection() {
+             accessSlot(index);
+         });
+ 
+-        bool isShared = mVinoGsetting->get(kVinoViewOnlyKey).toBool();
+-        bool secPwd = mVinoGsetting->get(kVinoPromptKey).toBool();
+-        initShareStatus(!isShared, secPwd);
+     }
+ }
+ 
+@@ -132,11 +155,41 @@ void ShareMain::initShareStatus(bool isConnnect, bool isPwd) {
+     }
+ }
+ 
+-void ShareMain::viewBoxSlot(bool status) {
+-    Q_UNUSED(status);
+-    if (status) {
+-        mVinoGsetting->set(kVinoViewOnlyKey, status);
++void ShareMain::initEnableStatus() {
++    QProcess *process = new QProcess;
++
++    process->start("systemctl", QStringList() << "--user" << "is-active" << "vino-server.service");
++    process->waitForFinished();
++    setFrameVisible((process->readAllStandardOutput().replace("\n","") == "active"));
++
++    process->close();
++}
++
++void ShareMain::setFrameVisible(bool visible) {
++    mEnableBox->setChecked(visible);
++
++    mViewFrame->setVisible(visible);
++    mSecurityFrame->setVisible(visible);
++    mSecurityPwdFrame->setVisible(visible);
++    mSecurityTitleLabel->setVisible(visible);
++}
++
++void ShareMain::enableSlot(bool status) {
++    QProcess process;
++    QString cmd;
++
++    if(status) {
++        cmd = "start";
++    } else {
++        cmd = "stop";
+     }
++    process.startDetached("systemctl", QStringList() << "--user" << cmd << "vino-server.service");
++
++    setFrameVisible(status);
++}
++
++void ShareMain::viewBoxSlot(bool status) {
++    mVinoGsetting->set(kVinoViewOnlyKey, !status);
+ }
+ 
+ void ShareMain::accessSlot(int index) {
+@@ -151,7 +204,7 @@ void ShareMain::accessSlot(int index) {
+         mPwdsLabel->setEnabled(true);
+         mPwdLineEdit->setEnabled(true);
+         mVinoGsetting->set(kVinoPromptKey, false);
+-        mVinoGsetting->reset(kAuthenticationKey), 'vnc';
++        mVinoGsetting->reset(kAuthenticationKey);
+     }
+ }
+ 
+diff --git a/plugins/network/vino/sharemain.h b/plugins/network/vino/sharemain.h
+index e7681c9..49697c4 100755
+--- a/plugins/network/vino/sharemain.h
++++ b/plugins/network/vino/sharemain.h
+@@ -51,6 +51,7 @@ public:
+     ~ShareMain();
+ 
+ private:
++    QFrame * mEnableFrame;
+     QFrame * mViewFrame;
+     QFrame * mSecurityFrame;
+     QFrame * mSecurityPwdFrame;
+@@ -58,6 +59,7 @@ private:
+     QFrame * mNoticeOFrame;
+     QFrame * mNoticeNFrame;
+ 
++    QCheckBox * mEnableBox;
+     QCheckBox * mViewBox;
+     QRadioButton * mAccessBox;
+     QRadioButton * mPwdBox;
+@@ -67,6 +69,7 @@ private:
+     QRadioButton * mNoticeNBtn;
+ 
+     QLabel * mShareTitleLabel;
++    QLabel * mEnableLabel;
+     QLabel * mViewLabel;
+     QLabel * mSecurityTitleLabel;
+     QLabel * mAccessLabel;
+@@ -87,8 +90,11 @@ private:
+     void initUI();
+     void initConnection();
+     void initShareStatus(bool isConnnect, bool isPwd);
++    void initEnableStatus();
++    void setFrameVisible(bool visible);
+ 
+ private slots:
++    void enableSlot(bool status);
+     void viewBoxSlot(bool status);
+     void accessSlot(int index);
+     void pwdInputSlot(QString pwd);
+diff --git a/plugins/network/vino/vino.cpp b/plugins/network/vino/vino.cpp
+index 504b6e0..dc16312 100755
+--- a/plugins/network/vino/vino.cpp
++++ b/plugins/network/vino/vino.cpp
+@@ -20,16 +20,15 @@
+ #include "vino.h"
+ #include "ui_vino.h"
+ 
+-Vino::Vino() : ui(new Ui::Vino) {
+-    pluginWidget = new ShareMain;
+-    ui->setupUi(pluginWidget);
+-
++Vino::Vino() : ui(new Ui::Vino), mFirstLoad(true) {
+     pluginName = tr("Vino");
+     pluginType = NETWORK;
+ }
+ 
+ Vino::~Vino() {
+-    delete ui;
++    if (!mFirstLoad) {
++        delete ui;
++    }
+ }
+ 
+ QString Vino::get_plugin_name() {
+@@ -41,6 +40,12 @@ int Vino::get_plugin_type() {
+ }
+ 
+ QWidget *Vino::get_plugin_ui() {
++    if (mFirstLoad) {
++        mFirstLoad = false;
++        pluginWidget = new ShareMain;
++        ui->setupUi(pluginWidget);
++    }
++
+     return pluginWidget;
+ }
+ 
+diff --git a/plugins/network/vino/vino.h b/plugins/network/vino/vino.h
+index 272fa0d..6ea603f 100755
+--- a/plugins/network/vino/vino.h
++++ b/plugins/network/vino/vino.h
+@@ -52,6 +52,7 @@ private:
+     QString pluginName;
+     int pluginType;
+     ShareMain* pluginWidget;
++    bool mFirstLoad;
+ 
+ };
+ #endif // VINO_H
+-- 
+2.23.0
+

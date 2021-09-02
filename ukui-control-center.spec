@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        4
+Release:        5
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -142,6 +142,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/polkit-1/actions/org.ukui.groupmanager.policy
 
 %changelog
+* Thu Sep 2 2021 douyan <douyan@kylinos.cn> - 3.0.1-5
+- add patch:fix_arm_root_user_crash.patch
+
 * Thu Jan 21 2021 lvhan <lvhan@kylinos.cn> - 3.0.1-4
 - fix-blueman-tray-and-groupadd-autologin
 

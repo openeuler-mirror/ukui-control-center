@@ -1,0 +1,14 @@
+diff -Naur ukui-control-center-3.0.1/group-manager-server/group_manager_server.cpp ukui-control-center-3.0.1~/group-manager-server/group_manager_server.cpp
+--- ukui-control-center-3.0.1/group-manager-server/group_manager_server.cpp	2019-05-27 15:48:18.000000000 +0800
++++ ukui-control-center-3.0.1~/group-manager-server/group_manager_server.cpp	2021-09-02 14:35:55.436486626 +0800
+@@ -66,8 +66,8 @@
+     QString groupadd = "/usr/sbin/groupadd";
+     QString addgroup = "/usr/sbin/addgroup";
+     QString command;
+-    QFile groupaddFile("/usr/sbin/addgroup");
+-    QFile addgroupFile("/usr/sbin/groupadd");
++    QFile groupaddFile("/usr/sbin/groupadd");
++    QFile addgroupFile("/usr/sbin/addgroup");
+ 
+     QProcess p(0);
+     QStringList args;

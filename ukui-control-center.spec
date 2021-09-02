@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        14
+Release:        15
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -79,10 +79,11 @@ patch6:	0006-fix-Group-members-are-not-displayed.patch
 patch7: 0007-fix-vnc-crashed.patch
 patch8: 0008-fix-redeclaration-of-QStringList-usergroupList-in-ed.patch
 patch9: 0009-fix-layout-optimization.patch
-patch10:0010-Added-translation-using-Weblate-Tibetan.patch
-patch11:0011-power-add-sleep-function.patch
-patch12:0012-window-add-title-icon.patch
-patch13:0001-fix-compile-extern-C-error.patch
+patch10: 0010-Added-translation-using-Weblate-Tibetan.patch
+patch11: 0011-power-add-sleep-function.patch
+patch12: 0012-window-add-title-icon.patch
+patch13: 0001-fix-compile-extern-C-error.patch
+patch14: fix_arm_root_user_crash.patch
 
 Recommends: qt5-qtquickcontrols
 
@@ -117,6 +118,7 @@ Suggests: ukui-settings-daemon
 %patch11 -p1
 %patch12 -p1
 %patch13 -p1
+%patch14 -p1
 
 %build
 qmake-qt5
@@ -160,7 +162,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/polkit-1/actions/org.ukui.groupmanager.policy
 
 %changelog
-* Tue Jul 29 2021 tanyulong <tanyulong@kylinos.cn> - 3.0.1-14
+* Wed Sep 1 2021 douyan <douyan@kylinos.cn> - 3.0.1-15
+- fix arm verion root user open ukui-control-center crash issue
+
+* Thu Jul 29 2021 tanyulong <tanyulong@kylinos.cn> - 3.0.1-14
 - solve compile build error
 
 * Fri Jul 16 2021 tanyulong<tanyulong@kylinos.cn> - 3.0.1-13

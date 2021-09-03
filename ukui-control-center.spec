@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        15
+Release:        16
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -84,6 +84,7 @@ patch11: 0011-power-add-sleep-function.patch
 patch12: 0012-window-add-title-icon.patch
 patch13: 0001-fix-compile-extern-C-error.patch
 patch14: fix_arm_root_user_crash.patch
+patch15: fix_add_group_failed_issue.patch
 
 Recommends: qt5-qtquickcontrols
 
@@ -132,14 +133,16 @@ make INSTALL_ROOT=%{buildroot} install
 set -e
 glib-compile-schemas /usr/share/glib-2.0/schemas/
 
-#systemctl enable ukui-group-manager.service
-#systemctl start  ukui-group-manager.service
 chown root:root /usr/bin/checkuserpwd
 chmod u+s /usr/bin/checkuserpwd
 
+%systemd_post ukui-group-manager.service
+
 %preun
-#systemctl disable ukui-group-manager.service
-#systemctl stop ukui-group-manager.service
+%systemd_preun ukui-group-manager.service
+
+%postun
+%systemd_postun ukui-group-manager.service
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -162,6 +165,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/polkit-1/actions/org.ukui.groupmanager.policy
 
 %changelog
+* Thu Sep 2 2021 douyan <douyan@kylinos.cn> - 3.0.1-16
+- fix add group failed issue
+
 * Wed Sep 1 2021 douyan <douyan@kylinos.cn> - 3.0.1-15
 - fix arm verion root user open ukui-control-center crash issue
 

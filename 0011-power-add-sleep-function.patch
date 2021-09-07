@@ -1,0 +1,453 @@
+From 1ed0391590fb670596523e2ce1df224c1f105769 Mon Sep 17 00:00:00 2001
+From: tanyulong <tanyulong@kylinos.cn>
+Date: Mon, 12 Jul 2021 13:59:08 +0800
+Subject: [PATCH]  power add sleep function
+
+---
+ commonComponent/ComboxFrame/comboxframe.cpp | 21 ++++++
+ commonComponent/ComboxFrame/comboxframe.h   | 29 ++++++++
+ commonComponent/comboxframe.pri             |  7 ++
+ plugins/system/power/power.cpp              | 78 ++++++++++++++++++++-
+ plugins/system/power/power.h                | 16 +++++
+ plugins/system/power/power.pro              |  3 +-
+ plugins/system/power/power.ui               | 15 +---
+ plugins/system/power/powermacrodata.h       |  1 +
+ registeredQDbus/sysdbusregister.cpp         | 44 ++++++++----
+ registeredQDbus/sysdbusregister.h           | 13 ++--
+ 10 files changed, 193 insertions(+), 34 deletions(-)
+ create mode 100644 commonComponent/ComboxFrame/comboxframe.cpp
+ create mode 100644 commonComponent/ComboxFrame/comboxframe.h
+ create mode 100644 commonComponent/comboxframe.pri
+
+diff --git a/commonComponent/ComboxFrame/comboxframe.cpp b/commonComponent/ComboxFrame/comboxframe.cpp
+new file mode 100644
+index 0000000..aba3553
+--- /dev/null
++++ b/commonComponent/ComboxFrame/comboxframe.cpp
+@@ -0,0 +1,21 @@
++#include "comboxframe.h"
++
++ComboxFrame::ComboxFrame(QString labelStr, QWidget *parent) : mTitleName(labelStr), QFrame(parent) {
++
++    this->setMinimumSize(550, 50);
++    this->setMaximumSize(960, 50);
++    this->setFrameShape(QFrame::Shape::Box);
++
++    mTitleLabel = new QLabel(mTitleName, this);
++    mCombox = new QComboBox(this);
++
++    mHLayout = new QHBoxLayout(this);
++    mHLayout->addWidget(mTitleLabel);
++    mHLayout->addWidget(mCombox);
++
++    this->setLayout(mHLayout);
++}
++
++ComboxFrame::~ComboxFrame() {
++
++}
+diff --git a/commonComponent/ComboxFrame/comboxframe.h b/commonComponent/ComboxFrame/comboxframe.h
+new file mode 100644
+index 0000000..d6f2679
+--- /dev/null
++++ b/commonComponent/ComboxFrame/comboxframe.h
+@@ -0,0 +1,29 @@
++#ifndef COMBOXFRAME_H
++#define COMBOXFRAME_H
++
++#include <QWidget>
++#include <QObject>
++#include <QLabel>
++#include <QComboBox>
++#include <QFrame>
++#include <QHBoxLayout>
++
++class ComboxFrame : public QFrame
++{
++    Q_OBJECT
++public:
++    ComboxFrame(QString labelStr, QWidget *parent = nullptr);
++    ~ComboxFrame();
++
++public:
++    QComboBox *mCombox;
++
++private:
++    QLabel      *mTitleLabel;
++    QHBoxLayout *mHLayout;
++    QString     mTitleName;
++
++signals:
++};
++
++#endif // COMBOXFRAME_H
+diff --git a/commonComponent/comboxframe.pri b/commonComponent/comboxframe.pri
+new file mode 100644
+index 0000000..e1399d5
+--- /dev/null
++++ b/commonComponent/comboxframe.pri
+@@ -0,0 +1,7 @@
++#LIBINTERFACE_NAME = $$qtLibraryTarget(comboxframe)
++
++SOURCES += \
++        $$PWD/ComboxFrame/comboxframe.cpp \
++
++HEADERS += \
++        $$PWD/ComboxFrame/comboxframe.h \
+diff --git a/plugins/system/power/power.cpp b/plugins/system/power/power.cpp
+index ac35f93..52d1168 100755
+--- a/plugins/system/power/power.cpp
++++ b/plugins/system/power/power.cpp
+@@ -22,6 +22,10 @@
+ #include "powermacrodata.h"
+ 
+ #include <QDebug>
++#include <QDBusInterface>
++#include <QDBusReply>
++#include <QDBusConnection>
++#include <QSettings>
+ 
+ typedef enum {
+     BALANCE,
+@@ -45,6 +49,9 @@ const int COMPUTER_BALANCE  = 30 * 60;
+ const int DISPLAY_SAVING    = 20 * 60;
+ const int COMPUTER_SAVING   = 2 * 60 * 60;
+ 
++const QStringList kHibernate { QObject::tr("Never"),QObject::tr("10min"), QObject::tr("20min"),
++                               QObject::tr("40min"), QObject::tr("80min")};
++
+ Power::Power() {
+     ui = new Ui::Power;
+     pluginWidget = new QWidget;
+@@ -59,11 +66,17 @@ Power::Power() {
+ 
+     const QByteArray id(POWERMANAGER_SCHEMA);
+ 
++    initDbus();
+     setupComponent();
+     isPowerSupply();
+     if (QGSettings::isSchemaInstalled(id)) {
+         settings = new QGSettings(id, QByteArray(), this);
+-        initModeStatus();
++        
++	mPowerKeys = settings->keys();
++        
++	initGeneralSet();        
++	
++	initModeStatus();
+         setupConnect();
+         initPowerOtherStatus();
+     } else {
+@@ -126,6 +139,7 @@ void Power::isPowerSupply() {
+         ui->closeLidFrame->setVisible(false);
+         ui->title2Label->setVisible(false);
+         ui->iconFrame->setVisible(false);
++        ui->verticalSpacer_2->changeSize(0, 0);
+     } else {
+         qDebug() << "brightness info is valid";
+         isExitsPower = true ;
+@@ -134,6 +148,10 @@ void Power::isPowerSupply() {
+     }
+ }
+ 
++void Power::setHibernateTime(QString hibernate) {
++    mUkccInterface->call("setSuspendThenHibernate", hibernate);
++}
++
+ void Power::setupComponent() {
+     //
+     ui->powerModeBtnGroup->setId(ui->balanceRadioBtn, BALANCE);
+@@ -453,3 +471,61 @@ void Power::refreshUI() {
+ //        ui->customWidget->setStyleSheet("QWidget{background: #F4F4F4; border-top-left-radius: 6px; border-top-right-radius: 6px;}");
+     }
+ }
++
++void Power::initGeneralSet() {
++    if (getHibernateStatus() && mPowerKeys.contains("afterIdleAction")) {
++        mHibernate = new ComboxFrame(tr("After suspending this time, the system will go to sleep:"), pluginWidget);
++
++        ui->powerLayout->addWidget(new QLabel(tr("General Settings")));
++        ui->powerLayout->addWidget(mHibernate);
++
++        ui->powerLayout->addStretch();
++
++        for(int i = 0; i < kHibernate.length(); i++) {
++            mHibernate->mCombox->addItem(kHibernate.at(i));
++        }
++
++        if (getHibernateTime().isEmpty()) {
++            mHibernate->mCombox->setCurrentIndex(0);
++        } else {
++            mHibernate->mCombox->setCurrentText(getHibernateTime());
++        }
++
++        connect(mHibernate->mCombox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [=](int index) {
++            setHibernateTime(mHibernate->mCombox->currentText());
++            if (index) {
++                settings->set(HIBERNATE_KEY, "suspend-then-hibernate");
++            } else {
++                settings->set(HIBERNATE_KEY, "suspend");
++            }
++        });
++    }
++}
++
++bool Power::getHibernateStatus() {
++
++    QDBusInterface loginInterface("org.freedesktop.login1",
++                                  "/org/freedesktop/login1",
++                                  "org.freedesktop.login1.Manager",
++                                  QDBusConnection::systemBus());
++
++    if (loginInterface.isValid()) {
++        QDBusReply<QString> reply = loginInterface.call("CanSuspendThenHibernate");
++        return reply.value() == "yes" ? true : false;
++    }
++}
++
++QString Power::getHibernateTime() {
++    QDBusReply<QString> hibernateTime = mUkccInterface->call("getSuspendThenHibernate");
++    if (hibernateTime.isValid()) {
++        return hibernateTime.value();
++    }
++    return "";
++}
++
++void Power::initDbus() {
++    mUkccInterface = new QDBusInterface("com.control.center.qt.systemdbus",
++                                        "/",
++                                        "com.control.center.interface",
++                                        QDBusConnection::systemBus());
++}
+diff --git a/plugins/system/power/power.h b/plugins/system/power/power.h
+index d6d5d1d..b4da6e4 100755
+--- a/plugins/system/power/power.h
++++ b/plugins/system/power/power.h
+@@ -29,6 +29,8 @@
+ 
+ #include "shell/interface.h"
+ 
++#include "commonComponent/ComboxFrame/comboxframe.h"
++
+ namespace Ui {
+ class Power;
+ }
+@@ -78,9 +80,23 @@ private:
+     QStringList lidStringList;
+     QStringList buttonStringList;
+     QStringList iconShowList;
++   
++    QStringList mPowerKeys;
+ 
+     bool settingsCreate;
+     bool isExitsPower;
++
++    ComboxFrame *mHibernate;
++    QDBusInterface *mUkccInterface;
++
++private:
++    void initGeneralSet();
++    bool getHibernateStatus();
++    QString  getHibernateTime();
++    void initDbus();
++
++private slots:
++    void setHibernateTime(QString hibernate);
+ };
+ 
+ #endif // POWER_H
+diff --git a/plugins/system/power/power.pro b/plugins/system/power/power.pro
+index f417bc4..795ac94 100755
+--- a/plugins/system/power/power.pro
++++ b/plugins/system/power/power.pro
+@@ -1,8 +1,9 @@
++include(../../../env.pri)
+ QT       += widgets dbus
+ TEMPLATE = lib
+ CONFIG   += plugin
+ 
+-include(../../../env.pri)
++include($$PROJECT_COMPONENTSOURCE/comboxframe.pri)
+ 
+ TARGET = $$qtLibraryTarget(power)
+ DESTDIR = ../..
+diff --git a/plugins/system/power/power.ui b/plugins/system/power/power.ui
+index aea2b2a..e8be31d 100755
+--- a/plugins/system/power/power.ui
++++ b/plugins/system/power/power.ui
+@@ -72,7 +72,7 @@
+        <number>0</number>
+       </property>
+       <item>
+-       <layout class="QVBoxLayout" name="verticalLayout">
++       <layout class="QVBoxLayout" name="powerLayout">		      
+         <property name="spacing">
+          <number>8</number>
+         </property>
+@@ -1127,19 +1127,6 @@
+           </layout>
+          </widget>
+         </item>
+-        <item>
+-         <spacer name="verticalSpacer_3">
+-          <property name="orientation">
+-           <enum>Qt::Vertical</enum>
+-          </property>
+-          <property name="sizeHint" stdset="0">
+-           <size>
+-            <width>20</width>
+-            <height>40</height>
+-           </size>
+-          </property>
+-         </spacer>
+-        </item>
+        </layout>
+       </item>
+      </layout>
+diff --git a/plugins/system/power/powermacrodata.h b/plugins/system/power/powermacrodata.h
+index 65fc099..208d8c7 100755
+--- a/plugins/system/power/powermacrodata.h
++++ b/plugins/system/power/powermacrodata.h
+@@ -32,6 +32,7 @@
+ #define BUTTON_SUSPEND_KEY "button-suspend"
+ #define BUTTON_POWER_KEY "button-power"
+ #define IDLE_DIM_TIME_KEY "idle-dim-time"
++#define HIBERNATE_KEY           "after-idle-action"
+ 
+ #define PRESENT_VALUE "present"
+ #define ALWAYS_VALUE "always"
+diff --git a/registeredQDbus/sysdbusregister.cpp b/registeredQDbus/sysdbusregister.cpp
+index 58d31db..54c2509 100755
+--- a/registeredQDbus/sysdbusregister.cpp
++++ b/registeredQDbus/sysdbusregister.cpp
+@@ -20,30 +20,26 @@
+ #include "sysdbusregister.h"
+ 
+ #include <QDebug>
+-#include <QSettings>
+ #include <QSharedPointer>
++#include <QRegExp>
++#include <stdlib.h>
+ 
+ SysdbusRegister::SysdbusRegister()
+ {
++    mHibernateFile = "/etc/systemd/sleep.conf";
++    mHibernateSet = new QSettings(mHibernateFile, QSettings::IniFormat, this);
++    mHibernateSet->setIniCodec("UTF-8");
+ }
+ 
+ SysdbusRegister::~SysdbusRegister()
+ {
+ }
+ 
+-//QString SysdbusRegister::name () const{
+-//    return m_name;
+-//}
+-
+-//void SysdbusRegister::SetName(QString name){
+-//    m_name = name;
+-//}
+-
+-void SysdbusRegister::exitService(){
++void SysdbusRegister::exitService() {
+     qApp->exit(0);
+ }
+ 
+-QString SysdbusRegister::GetComputerInfo(){
++QString SysdbusRegister::GetComputerInfo() {
+     QByteArray ba;
+     FILE * fp = NULL;
+     char cmd[128];
+@@ -86,7 +82,7 @@ QString SysdbusRegister::getNoPwdLoginStatus(){
+ }
+ 
+ //设置免密登录状态
+-void SysdbusRegister::setNoPwdLoginStatus(bool status,QString username){
++void SysdbusRegister::setNoPwdLoginStatus(bool status,QString username) {
+     QString filename = "/etc/lightdm/lightdm.conf";
+     QSettings  Settings(filename, QSettings::IniFormat);
+ 
+@@ -105,8 +101,7 @@ void SysdbusRegister::setNoPwdLoginStatus(bool status,QString username){
+ }
+ 
+ // 设置自动登录状态
+-void SysdbusRegister::setAutoLoginStatus(QString username)
+-{
++void SysdbusRegister::setAutoLoginStatus(QString username) {
+     QString filename = "/etc/lightdm/lightdm.conf";
+     QSettings  Settings(filename, QSettings::IniFormat);
+ 
+@@ -118,3 +113,24 @@ void SysdbusRegister::setAutoLoginStatus(QString username)
+     systemRun("sudo groupadd -r autologin");
+     systemRun(QString("sudo gpasswd -a %1 autologin").arg(username));
+ }
++
++
++QString SysdbusRegister::getSuspendThenHibernate() {
++    mHibernateSet->beginGroup("Sleep");
++
++    QString time = mHibernateSet->value("HibernateDelaySec").toString();
++
++    mHibernateSet->endGroup();
++    mHibernateSet->sync();
++
++    return time;
++}
++
++void SysdbusRegister::setSuspendThenHibernate(QString time) {
++    mHibernateSet->beginGroup("Sleep");
++
++    mHibernateSet->setValue("HibernateDelaySec", time);
++
++    mHibernateSet->endGroup();
++    mHibernateSet->sync();
++}
+diff --git a/registeredQDbus/sysdbusregister.h b/registeredQDbus/sysdbusregister.h
+index 8bfc94f..df75d2d 100755
+--- a/registeredQDbus/sysdbusregister.h
++++ b/registeredQDbus/sysdbusregister.h
+@@ -23,8 +23,8 @@
+ #include <QObject>
+ #include <QCoreApplication>
+ #include <QProcess>
+-
+ #include <QFile>
++#include <QSettings>
+ 
+ class SysdbusRegister : public QObject
+ {
+@@ -37,15 +37,15 @@ public:
+     ~SysdbusRegister();
+ 
+ private:
+-//    QString m_name;
++    QString mHibernateFile;
++
++    QSettings *mHibernateSet;
+ 
+ signals:
+     Q_SCRIPTABLE void nameChanged(QString);
+     Q_SCRIPTABLE void computerinfo(QString);
+ 
+ public slots:
+-//    Q_SCRIPTABLE QString name() const;
+-//    Q_SCRIPTABLE void SetName(QString name);
+ 
+     Q_SCRIPTABLE void exitService();
+     Q_SCRIPTABLE QString GetComputerInfo();
+@@ -59,7 +59,12 @@ public slots:
+ 
+     //设置自动登录状态
+     Q_SCRIPTABLE void setAutoLoginStatus(QString username);
++   
++    // 获取挂起到休眠时间
++    Q_SCRIPTABLE QString getSuspendThenHibernate();
+ 
++    // 设置挂起到休眠时间
++    Q_SCRIPTABLE void setSuspendThenHibernate(QString time);
+ };
+ 
+ #endif // SYSDBUSREGISTER_H
+-- 
+2.23.0
+

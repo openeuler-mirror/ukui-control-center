@@ -1,0 +1,86 @@
+From 575c32022d326eb391054c0608d5fc82cebb9281 Mon Sep 17 00:00:00 2001
+From: tanyulong <tanyulong@kylinos.cn>
+Date: Fri, 9 Jul 2021 16:55:22 +0800
+Subject: [PATCH] fix vnc crashed
+
+---
+ plugins/system/display/display.cpp | 30 ++++++++++++++++++++++++++++++
+ plugins/system/display/display.h   |  4 +++-
+ 2 files changed, 33 insertions(+), 1 deletion(-)
+
+diff --git a/plugins/system/display/display.cpp b/plugins/system/display/display.cpp
+index de931b6..383c564 100755
+--- a/plugins/system/display/display.cpp
++++ b/plugins/system/display/display.cpp
+@@ -25,6 +25,8 @@
+ #include <KF5/KScreen/kscreen/getconfigoperation.h>
+ #include <KF5/KScreen/kscreen/output.h>
+ #include <QDebug>
++#include <QDBusInterface>
++#include <QDBusConnection>
+ 
+ DisplaySet::DisplaySet(){
+     pluginWidget = new Widget;
+@@ -43,6 +45,15 @@ DisplaySet::~DisplaySet(){
+ }
+ 
+ QWidget *DisplaySet::get_plugin_ui(){
++   if (mFirstLoad) {
++        requestBackend();
++        mFirstLoad = false;
++        pluginWidget = new Widget;
++        QObject::connect(new KScreen::GetConfigOperation(), &KScreen::GetConfigOperation::finished,
++                         [&](KScreen::ConfigOperation *op) {
++            pluginWidget->setConfig(qobject_cast<KScreen::GetConfigOperation*>(op)->config());
++        });
++    }
+     return pluginWidget;
+ }
+ 
+@@ -63,3 +74,22 @@ const QString DisplaySet::name() const {
+     return QStringLiteral("display");
+ }
+ 
++void DisplaySet::requestBackend() {
++
++    QDBusInterface screenIft("org.kde.KScreen",
++                             "/",
++                             "org.kde.KScreen",
++                             QDBusConnection::sessionBus());
++    if (!screenIft.isValid()) {
++        QProcess process;
++        process.start("uname -m");
++        process.waitForFinished();
++        QString output = process.readAll();
++        output = output.simplified();
++
++        QString command = "/usr/lib/" + output + "-linux-gnu" +"/libexec/kf5/kscreen_backend_launcher";
++        QProcess::startDetached(command);
++    }
++}
++
++
+diff --git a/plugins/system/display/display.h b/plugins/system/display/display.h
+index e4f4fbd..b30e9bb 100755
+--- a/plugins/system/display/display.h
++++ b/plugins/system/display/display.h
+@@ -47,13 +47,15 @@ public:
+     void plugin_delay_control() Q_DECL_OVERRIDE;
+     const QString name() const  Q_DECL_OVERRIDE;
+ 
+-
++private:
++    void requestBackend();
+ private:
+     Ui::DisplayWindow * ui;
+     QString pluginName;
+     int pluginType;
+     Widget * pluginWidget;
+ 
++    bool mFirstLoad;
+ };
+ 
+ #endif // DISPLAYSET_H
+-- 
+2.23.0
+

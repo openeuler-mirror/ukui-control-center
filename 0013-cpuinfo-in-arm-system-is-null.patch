@@ -1,0 +1,68 @@
+From b225b7a8b8cb4421fcfa81e4fc985bcf6ec1c59d Mon Sep 17 00:00:00 2001
+From: peijiankang <peijiankang@kylinos.cn>
+Date: Sat, 11 Sep 2021 15:29:44 +0800
+Subject: [PATCH] cpuinfo in arm system is null
+
+---
+ plugins/messages-task/about/cpuinfo.cpp | 37 +++++++++++++------------
+ 1 file changed, 19 insertions(+), 18 deletions(-)
+
+diff --git a/plugins/messages-task/about/cpuinfo.cpp b/plugins/messages-task/about/cpuinfo.cpp
+index ee24a95..d208453 100644
+--- a/plugins/messages-task/about/cpuinfo.cpp
++++ b/plugins/messages-task/about/cpuinfo.cpp
+@@ -1,6 +1,6 @@
+ #include <QFile>
+ #include <QDebug>
+-
++#include <QProcess>
+ #include "cpuinfo.h"
+ 
+ cpuinfo::cpuinfo(QObject *parent) : QObject(parent)
+@@ -10,25 +10,26 @@ cpuinfo::cpuinfo(QObject *parent) : QObject(parent)
+ 
+ QString cpuinfo::getCpuName()
+ {
+-    QString name = "";
++	QString name = "";
+ #ifdef Q_OS_LINUX
+-    QFile file("/proc/cpuinfo");
+-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+-        return "no cpuinfo";
++	QProcess process;
++	process.start("lscpu");
++	process.waitForFinished();
++	QString output = process.readAll();
++	QStringList outputlist = output.split("\n");
+ 
+-    QString line = "N/A";
+-    QTextStream in(&file);
+-    line = in.readLine();
+-    while (!in.atEnd()) {
+-        line = in.readLine();
+-        if (line.contains("model name"))
+-            break;
+-    }
+-    //openEuler /proc/cpuinfo
+-    //model name	: Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
+-    name = QString(line).right(line.length() - (line.indexOf(":") + 2));
++	for (QString str : outputlist) {
++		if (str.contains("型号名称")){ 
++			name = QString(str).right(str.length() - 28);
++			break;
++		}
++		else if(str.contains("Model name")) {
++			name = QString(str).right(str.length() - 33);
++			break;
++		}
++	}
+ #elif defined(Q_OS_FREEBSD)
+ 
+ #endif
+-    return name;
+-}
++	return name;
++}    
+-- 
+2.30.0
+

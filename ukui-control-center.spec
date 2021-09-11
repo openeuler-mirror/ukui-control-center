@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        17
+Release:        18
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -86,6 +86,7 @@ patch13: 0001-fix-compile-extern-C-error.patch
 patch14: fix_arm_root_user_crash.patch
 patch15: fix_add_group_failed_issue.patch
 patch16: fix_user_passwd_valid_time_setting_failed_issue.patch
+patch17: 0013-cpuinfo-in-arm-system-is-null.patch
 
 Recommends: qt5-qtquickcontrols
 
@@ -123,6 +124,7 @@ Suggests: ukui-settings-daemon
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
 
 %build
 qmake-qt5
@@ -168,6 +170,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/polkit-1/actions/org.ukui.groupmanager.policy
 
 %changelog
+* Sat Sep 11 2021 peijiankang <peijiankang@kylinos.cn> - 3.0.1-18
+- add 0013-cpuinfo-in-arm-system-is-null.patch
+
 * Mon Sep 6 2021 douyan <douyan@kylinos.cn> - 3.0.1-17
 - add fix_user_passwd_valid_time_setting_failed_issue.patch
 

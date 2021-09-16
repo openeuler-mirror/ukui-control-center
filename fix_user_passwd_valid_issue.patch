@@ -1,0 +1,12 @@
+diff -Naur ukui-control-center-3.0.1/plugins/account/userinfo/changevaliddialog.cpp ukui-control-center-3.0.1~/plugins/account/userinfo/changevaliddialog.cpp
+--- ukui-control-center-3.0.1/plugins/account/userinfo/changevaliddialog.cpp	2021-09-16 15:20:36.911428472 +0800
++++ ukui-control-center-3.0.1~/plugins/account/userinfo/changevaliddialog.cpp	2021-09-16 15:24:43.754446704 +0800
+@@ -143,7 +143,7 @@
+ 
+ void ChangeValidDialog::_getCurrentPwdStatus(){
+     //
+-    QString cmd = "passwd -S " + _name;
++    QString cmd = "pkexec passwd -S " + _name;
+ 
+     QProcess * process = new QProcess;
+     process->start(cmd);

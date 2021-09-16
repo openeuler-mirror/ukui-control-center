@@ -1,11 +1,12 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        18
+Release:        19
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
 Source0:        %{name}-%{version}.tar.gz
+Source1:        ukui-group-manager.desktop
 
 BuildRequires: qt5-qtsvg-devel
 BuildRequires: qt5-qtbase-devel
@@ -87,6 +88,7 @@ patch14: fix_arm_root_user_crash.patch
 patch15: fix_add_group_failed_issue.patch
 patch16: fix_user_passwd_valid_time_setting_failed_issue.patch
 patch17: 0013-cpuinfo-in-arm-system-is-null.patch
+patch18: fix_user_passwd_valid_issue.patch
 
 Recommends: qt5-qtquickcontrols
 
@@ -125,6 +127,7 @@ Suggests: ukui-settings-daemon
 %patch15 -p1
 %patch16 -p1
 %patch17 -p1
+%patch18 -p1
 
 %build
 qmake-qt5
@@ -134,20 +137,15 @@ make
 rm -rf $RPM_BUILD_ROOT
 make INSTALL_ROOT=%{buildroot} install
 
+mkdir -p %{buildroot}/etc/xdg/autostart/
+cp -r %{SOURCE1} %{buildroot}/etc/xdg/autostart/
+
 %post
 set -e
 glib-compile-schemas /usr/share/glib-2.0/schemas/
 
 chown root:root /usr/bin/checkuserpwd
 chmod u+s /usr/bin/checkuserpwd
-
-%systemd_post ukui-group-manager.service
-
-%preun
-%systemd_preun ukui-group-manager.service
-
-%postun
-%systemd_postun ukui-group-manager.service
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -168,8 +166,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/checkuserpwd
 %{_unitdir}/ukui-group-manager.service
 %{_datadir}/polkit-1/actions/org.ukui.groupmanager.policy
+%{_sysconfdir}/xdg/autostart/ukui-group-manager.desktop
 
 %changelog
+* Thu Sep 16 2021 douyan <douyan@kylinos.cn> - 3.0.1-19
+- add fix_user_passwd_valid_issue.patch
+
 * Sat Sep 11 2021 peijiankang <peijiankang@kylinos.cn> - 3.0.1-18
 - add 0013-cpuinfo-in-arm-system-is-null.patch
 

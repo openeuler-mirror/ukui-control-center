@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        20
+Release:        21
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -90,6 +90,7 @@ patch16: fix_user_passwd_valid_time_setting_failed_issue.patch
 patch17: 0013-cpuinfo-in-arm-system-is-null.patch
 patch18: fix_user_passwd_valid_issue.patch
 patch19: 0014-modify-the-error-of-ukui-control-center-open.patch
+patch20: 0015-fix-net-sort-wifi-strength.patch
 
 Recommends: qt5-qtquickcontrols
 
@@ -130,6 +131,7 @@ Suggests: ukui-settings-daemon
 %patch17 -p1
 %patch18 -p1
 %patch19 -p1
+%patch20 -p1
 
 %build
 qmake-qt5
@@ -171,6 +173,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/xdg/autostart/ukui-group-manager.desktop
 
 %changelog
+* Thu Oct 28 2021 tanyulong <tanyulong@kylinos.cn> - 3.0.1-21
+- fix net sort wifi strength
+
 * Tue Oct 19 2021 peijiankang <peijiankang@kylinos.cn> - 3.0.1-20
 - add 0014-modify-the-error-of-ukui-control-center-open.patch
 

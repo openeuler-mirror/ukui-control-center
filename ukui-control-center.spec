@@ -1,12 +1,12 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.4
-Release:        1
+Release:        2
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
 Source0:        %{name}-%{version}.tar.gz
-
+Patch01:        0001-modify-version-info-error.patch
 BuildRequires: qt5-qtsvg-devel
 BuildRequires: qt5-qtbase-devel
 BuildRequires: gsettings-qt-devel
@@ -102,7 +102,7 @@ Suggests: ukui-settings-daemon
 
 %prep
 %setup -q
-
+%patch1 -p1
 %build
 qmake-qt5
 make -j24
@@ -150,6 +150,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Mar 1 2022 pei-jiankang <peijiankang@kylinos.cn> - 3.0.4-2
+- modify version-info error
+
 * Wed Jan 26 2022 huayadong <huayadong@kylinos.cn> - 3.0.4-1
 - update to upstream version 3.0.4-1 
 

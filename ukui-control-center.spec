@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.4
-Release:        4
+Release:        5
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -123,8 +123,8 @@ mkdir -p %{buildroot}/etc/xdg/autostart/
 set -e
 glib-compile-schemas /usr/share/glib-2.0/schemas/
 
-chown root:root /usr/bin/checkuserpwd
-chmod u+s /usr/bin/checkuserpwd
+chown root:root /usr/bin/checkUserPwd
+chmod u+s /usr/bin/checkUserPwd
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -156,6 +156,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Mar 08 2022 tanyulong <tanyulong@kylinos.cn> - 3.0.4-5
+- fix no checkuserpwd directory
+
 * Wed Mar 2 2022 douyan <douyan@kylinos.cn> - 3.0.4-4
 - fix power missing issue
 

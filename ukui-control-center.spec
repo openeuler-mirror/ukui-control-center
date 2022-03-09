@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.4
-Release:        5
+Release:        6
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -9,6 +9,7 @@ Source0:        %{name}-%{version}.tar.gz
 Patch01:        0001-modify-version-info-error.patch
 Patch02:        0002-modify-area-info-display-error.patch
 Patch03:        0003-fix-power-missing-issue.patch
+Patch04:        0004-disable-the-str-of-password-check.patch
 
 BuildRequires: qt5-qtsvg-devel
 BuildRequires: qt5-qtbase-devel
@@ -84,6 +85,7 @@ Requires: qt5-qtquickcontrols
 
 Requires: ddcutil
 Requires: glib2
+Requires: systemd-pam
 
 
 Recommends: qt5-qtquickcontrols
@@ -108,6 +110,7 @@ Suggests: ukui-settings-daemon
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 qmake-qt5
@@ -156,6 +159,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Mar 09 2022 pei-jiankang <peijiankang@kylinos.cn> - 3.0.4-6
+- modify audio-info display
+
 * Tue Mar 08 2022 tanyulong <tanyulong@kylinos.cn> - 3.0.4-5
 - fix no checkuserpwd directory
 

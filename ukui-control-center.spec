@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.4
-Release:        6
+Release:        8
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -10,6 +10,8 @@ Patch01:        0001-modify-version-info-error.patch
 Patch02:        0002-modify-area-info-display-error.patch
 Patch03:        0003-fix-power-missing-issue.patch
 Patch04:        0004-disable-the-str-of-password-check.patch
+Patch05:        0005-Fix-the-problem-of-displaying-none-in-the-interface-version-information.patch
+Patch06:        0006-fix-the-problem-that-the-new-user-in-the-control-panel-is-stuck.patch
 
 BuildRequires: qt5-qtsvg-devel
 BuildRequires: qt5-qtbase-devel
@@ -111,6 +113,8 @@ Suggests: ukui-settings-daemon
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
+%patch6 -p1
 
 %build
 qmake-qt5
@@ -159,6 +163,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Mar 11 2022 huayadong <huayadong@kylinos.cn> - 3.0.4-8
+- add patch6: 0006-fix-the-problem-that-the-new-user-in-the-control-panel-is-stuck.patch
+
+* Wed Mar 09 2022 huayadong <huayadong@kylinos.cn> - 3.0.4-7
+- add patch5: 0004-Fix-the-problem-of-displaying-none-in-the-interface-version-information.patch
+
 * Wed Mar 09 2022 pei-jiankang <peijiankang@kylinos.cn> - 3.0.4-6
 - modify audio-info display
 

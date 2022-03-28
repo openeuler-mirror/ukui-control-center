@@ -1,12 +1,11 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        21
+Release:        22
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
 Source0:        %{name}-%{version}.tar.gz
-Source1:        ukui-group-manager.desktop
 
 BuildRequires: qt5-qtsvg-devel
 BuildRequires: qt5-qtbase-devel
@@ -20,7 +19,6 @@ BuildRequires: kf5-kwidgetsaddons-devel
 BuildRequires: kf5-kconfig-devel
 BuildRequires: kf5-kconfigwidgets-devel
 BuildRequires: kf5-ki18n-devel
-#BuildRequires: libkscreen
 BuildRequires: libkscreen-qt5-devel
 BuildRequires: qt5-qtdeclarative-devel
 BuildRequires: dconf-devel
@@ -41,6 +39,18 @@ BuildRequires: boost-devel
 BuildRequires: libxcb-devel
 BuildRequires: qt5-linguist
 BuildRequires: polkit-qt5-1-devel
+BuildRequires: pam-devel
+BuildRequires: systemd-devel
+
+BuildRequires: kf5-kxmlgui-devel
+BuildRequires: kf5-kglobalaccel-devel
+BuildRequires: kf5-bluez-qt-devel
+BuildRequires: opencv
+BuildRequires: libddcutil-devel
+BuildRequires: upower-devel
+BuildRequires: libpwquality-devel
+
+
 
 Requires: dconf
 Requires: qt5-qtimageformats
@@ -55,7 +65,6 @@ Requires: kf5-kwidgetsaddons-devel
 Requires: kf5-kconfig-devel
 Requires: kf5-kconfigwidgets-devel
 Requires: kf5-ki18n-devel
-#Requires: libkscreen
 Requires: libkscreen-qt5-devel
 Requires: qt5-qtdeclarative-devel
 Requires: dconf-devel
@@ -70,27 +79,10 @@ Requires: libcanberra-devel
 Requires: qt5-qtgraphicaleffects
 Requires: qt5-qtquickcontrols
 
-patch0: 0001-fix-system-overview-failed.patch
-patch1: 0002-fix-autologin-nopasswdlogin-failed.patch
-patch2: 0003-fix-dialog-pop-twice-after-modifying-resolution-bug.patch
-patch3: 0004-fix-effects-mode-not-available-bug.patch
-patch4: 0005-fix-blueman-tray-and-groupadd-autologin.patch
-patch5: 0001-add-judgment-when-Bluetooth-does-not-exist.patch
-patch6:	0006-fix-Group-members-are-not-displayed.patch
-patch7: 0007-fix-vnc-crashed.patch
-patch8: 0008-fix-redeclaration-of-QStringList-usergroupList-in-ed.patch
-patch9: 0009-fix-layout-optimization.patch
-patch10: 0010-Added-translation-using-Weblate-Tibetan.patch
-patch11: 0011-power-add-sleep-function.patch
-patch12: 0012-window-add-title-icon.patch
-patch13: 0001-fix-compile-extern-C-error.patch
-patch14: fix_arm_root_user_crash.patch
-patch15: fix_add_group_failed_issue.patch
-patch16: fix_user_passwd_valid_time_setting_failed_issue.patch
-patch17: 0013-cpuinfo-in-arm-system-is-null.patch
-patch18: fix_user_passwd_valid_issue.patch
-patch19: 0014-modify-the-error-of-ukui-control-center-open.patch
-patch20: 0015-fix-net-sort-wifi-strength.patch
+Requires: ddcutil
+Requires: glib2
+Requires: systemd-pam
+
 
 Recommends: qt5-qtquickcontrols
 
@@ -111,38 +103,16 @@ Suggests: ukui-settings-daemon
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
-%patch17 -p1
-%patch18 -p1
-%patch19 -p1
-%patch20 -p1
 
 %build
 qmake-qt5
-make
+make -j24
 
 %install
 rm -rf $RPM_BUILD_ROOT
 make INSTALL_ROOT=%{buildroot} install
 
 mkdir -p %{buildroot}/etc/xdg/autostart/
-cp -r %{SOURCE1} %{buildroot}/etc/xdg/autostart/
 
 %post
 set -e
@@ -158,7 +128,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/dbus-1/system.d/*
 %{_bindir}/launchSysDbus
 %{_bindir}/ukui-control-center
-#%%{_prefix}/lib/control-center/*
 %{_libdir}/ukui-control-center/*
 %{_datadir}/applications/*
 %{_datadir}/dbus-1/system-services/*
@@ -168,11 +137,22 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/ukui-control-center/shell/res/i18n
 %{_bindir}/group-manager-server
 %{_bindir}/checkuserpwd
-%{_unitdir}/ukui-group-manager.service
+%{_bindir}/checkUserPwd
 %{_datadir}/polkit-1/actions/org.ukui.groupmanager.policy
-%{_sysconfdir}/xdg/autostart/ukui-group-manager.desktop
+%{_sysconfdir}/pam.d/control-center
+/lib/systemd/system/ukui-group-manager.service
+%{_bindir}/childCheckpwdwithPAM
+%{_bindir}/ukui-control-center-session
+%{_datadir}/dbus-1/services/org.ukui.ukcc.session.service
+%{_datadir}/kylin-user-guide/data/*
+%{_datadir}/polkit-1/actions/com.control.center.qt.systemdbus.policy
+%{_datadir}/ukui-control-center/shell/res/search.xml
+
 
 %changelog
+* Fri Mar 25 2022 huayadong <huayadong@kylinos.cn> - 3.0.1-22
+- The shortcut keys of the same function are combined together
+
 * Thu Oct 28 2021 tanyulong <tanyulong@kylinos.cn> - 3.0.1-21
 - fix net sort wifi strength
 

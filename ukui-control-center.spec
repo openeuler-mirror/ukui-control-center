@@ -49,6 +49,7 @@ BuildRequires: opencv
 BuildRequires: libddcutil-devel
 BuildRequires: upower-devel
 BuildRequires: libpwquality-devel
+BuildRequires: xorg-x11-server-devel
 
 
 

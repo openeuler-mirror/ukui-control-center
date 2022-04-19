@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        22
+Release:        23
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -117,7 +117,7 @@ mkdir -p %{buildroot}/etc/xdg/autostart/
 
 %post
 set -e
-glib-compile-schemas /usr/share/glib-2.0/schemas/
+glib-compile-schemas /usr/share/glib-2.0/schemas/ &> /dev/null ||:
 
 chown root:root /usr/bin/checkuserpwd
 chmod u+s /usr/bin/checkuserpwd
@@ -151,6 +151,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Apr 19 2022 pei-jiankang <peijiankang@kylinos.cn> - 3.0.1-23
+- modify ukui-control-center install error
+
 * Fri Mar 25 2022 huayadong <huayadong@kylinos.cn> - 3.0.1-22
 - The shortcut keys of the same function are combined together
 

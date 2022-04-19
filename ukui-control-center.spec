@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.4
-Release:        9
+Release:        10
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -130,7 +130,7 @@ mkdir -p %{buildroot}/etc/xdg/autostart/
 
 %post
 set -e
-glib-compile-schemas /usr/share/glib-2.0/schemas/
+glib-compile-schemas /usr/share/glib-2.0/schemas/ &> /dev/null ||:
 
 chown root:root /usr/bin/checkUserPwd
 chmod u+s /usr/bin/checkUserPwd
@@ -165,6 +165,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Apr 19 2022 pei-jiankang <peijiankang@kylinos.cn> - 3.0.4-10
+- modify ukui-control-center install error
+
 * Wed Apr 6 2022 pei-jiankang <peijiankang@kylinos.cn> - 3.0.4-9
 - modify icon theme not display
 

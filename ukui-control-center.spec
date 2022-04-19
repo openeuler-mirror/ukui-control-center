@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        17
+Release:        18
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -68,6 +68,7 @@ Requires: network-manager-applet
 Requires: libcanberra-devel
 Requires: qt5-qtgraphicaleffects
 Requires: qt5-qtquickcontrols
+Requires: glib2
 
 patch0: 0001-fix-system-overview-failed.patch
 patch1: 0002-fix-autologin-nopasswdlogin-failed.patch
@@ -134,7 +135,7 @@ make INSTALL_ROOT=%{buildroot} install
 
 %post
 set -e
-glib-compile-schemas /usr/share/glib-2.0/schemas/
+glib-compile-schemas /usr/share/glib-2.0/schemas/ &> /dev/null ||:
 
 chown root:root /usr/bin/checkuserpwd
 chmod u+s /usr/bin/checkuserpwd
@@ -168,6 +169,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/polkit-1/actions/org.ukui.groupmanager.policy
 
 %changelog
+* Tue Apr 19 2022 pei-jiankang <peijiankang@kylinos.cn> - 3.0.1-18
+- modify ukui-control-center install error
+
 * Mon Sep 6 2021 douyan <douyan@kylinos.cn> - 3.0.1-17
 - add fix_user_passwd_valid_time_setting_failed_issue.patch
 

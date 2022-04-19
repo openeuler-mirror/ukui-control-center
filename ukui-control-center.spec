@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        5
+Release:        6
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -68,6 +68,7 @@ Requires: network-manager-applet
 Requires: libcanberra-devel
 Requires: qt5-qtgraphicaleffects
 Requires: qt5-qtquickcontrols
+Requires: glib2
 
 patch0: 0001-fix-system-overview-failed.patch
 patch1: 0002-fix-autologin-nopasswdlogin-failed.patch
@@ -110,7 +111,7 @@ make INSTALL_ROOT=%{buildroot} install
 
 %post
 set -e
-glib-compile-schemas /usr/share/glib-2.0/schemas/
+glib-compile-schemas /usr/share/glib-2.0/schemas/ &> /dev/null ||:
 
 #systemctl enable ukui-group-manager.service
 #systemctl start  ukui-group-manager.service
@@ -142,6 +143,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/polkit-1/actions/org.ukui.groupmanager.policy
 
 %changelog
+* Tue Apr 19 2022 pei-jiankang <peijiankang@kylinos.cn> - 3.0.1-6
+- modify ukui-control-center install error
+
 * Thu Sep 2 2021 douyan <douyan@kylinos.cn> - 3.0.1-5
 - add patch:fix_arm_root_user_crash.patch
 

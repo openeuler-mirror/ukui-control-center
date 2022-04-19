@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        20
+Release:        21
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -69,6 +69,7 @@ Requires: network-manager-applet
 Requires: libcanberra-devel
 Requires: qt5-qtgraphicaleffects
 Requires: qt5-qtquickcontrols
+Requires: glib2
 
 patch0: 0001-fix-system-overview-failed.patch
 patch1: 0002-fix-autologin-nopasswdlogin-failed.patch
@@ -144,7 +145,7 @@ cp -r %{SOURCE1} %{buildroot}/etc/xdg/autostart/
 
 %post
 set -e
-glib-compile-schemas /usr/share/glib-2.0/schemas/
+glib-compile-schemas /usr/share/glib-2.0/schemas/ &> /dev/null ||:
 
 chown root:root /usr/bin/checkuserpwd
 chmod u+s /usr/bin/checkuserpwd
@@ -171,6 +172,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/xdg/autostart/ukui-group-manager.desktop
 
 %changelog
+* Tue Apr 19 2022 pei-jiankang <peijiankang@kylinos.cn> - 3.0.1-21
+- modify ukui-control-center install error
+
 * Tue Oct 19 2021 peijiankang <peijiankang@kylinos.cn> - 3.0.1-20
 - add 0014-modify-the-error-of-ukui-control-center-open.patch
 

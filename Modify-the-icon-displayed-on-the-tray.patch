@@ -1,0 +1,37 @@
+From ce40f1bbe8632e58600a388c38a05f4cbdf4d081 Mon Sep 17 00:00:00 2001
+From: Z-bin <1134636325@qq.com>
+Date: Mon, 22 Feb 2021 11:18:46 +0800
+Subject: [PATCH] =?UTF-8?q?=E4=BF=AE=E6=94=B9=E6=98=BE=E7=A4=BA=E5=9C=A8?=
+ =?UTF-8?q?=E6=89=98=E7=9B=98=E4=B8=8A=E7=9A=84=E5=9B=BE=E6=A0=87=E9=97=AE?=
+ =?UTF-8?q?=E9=A2=98?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ plugins/personalized/desktop/desktop.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/plugins/personalized/desktop/desktop.cpp b/plugins/personalized/desktop/desktop.cpp
+index 7cc9dac3..ceca6aec 100644
+--- a/plugins/personalized/desktop/desktop.cpp
++++ b/plugins/personalized/desktop/desktop.cpp
+@@ -496,6 +496,7 @@ void Desktop::removeTrayItem(QString itemName) {
+     for (int i = 0; i < nameList.length(); i++) {
+         if (nameList.at(i) == itemName) {
+             nameList.removeAt(i);
++            ui->listWidget->setFixedHeight(ui->listWidget->height() - 55);
+             break;
+         }
+     }
+@@ -514,6 +515,7 @@ void Desktop::addTrayItem(QGSettings * trayGSetting) {
+             icon = QIcon::fromTheme("application-x-desktop");
+         }
+         initTrayStatus(name, icon, trayGSetting);
++        ui->listWidget->setFixedHeight(ui->listWidget->height() + 55);
+     }
+ }
+ 
+-- 
+2.33.0
+

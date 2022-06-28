@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        24
+Release:        25
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -153,6 +153,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Jun 28 2022 peijiankang <peijiankang@kylinos.cn> - 3.0.1-25
+- update about.png for openEuler
+
 * Fri Apr 29 2022 huayadong <huayadong@kylinos.cn> - 3.0.1-24
 - Modify the icon displayed on the tray
 

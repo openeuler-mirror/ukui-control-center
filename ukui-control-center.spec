@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        23
+Release:        24
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -95,6 +95,7 @@ Suggests: ukui-screensaver
 Suggests: ukui-settings-daemon
 #Suggests: qt5-qtgraphicaleffects
 
+Patch01:Modify-the-icon-displayed-on-the-tray.patch
 
 %description
  The UKUI control center contains configuration applets for the UKUI desktop,
@@ -104,6 +105,7 @@ Suggests: ukui-settings-daemon
 
 %prep
 %setup -q
+%patch01 -p1
 
 %build
 qmake-qt5
@@ -151,6 +153,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Apr 29 2022 huayadong <huayadong@kylinos.cn> - 3.0.1-24
+- Modify the icon displayed on the tray
+
 * Tue Apr 19 2022 pei-jiankang <peijiankang@kylinos.cn> - 3.0.1-23
 - modify ukui-control-center install error
 

@@ -1,0 +1,25 @@
+From 449655a9a73e8afac4b5d60ea1b4e47553294918 Mon Sep 17 00:00:00 2001
+From: peijiankang <peijiankang@kylinos.cn>
+Date: Mon, 18 Jul 2022 13:42:37 +0800
+Subject: [PATCH] Fix preferred language default errors
+
+---
+ plugins/time-language/area/area.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/plugins/time-language/area/area.cpp b/plugins/time-language/area/area.cpp
+index 048f2be..1c10b4e 100644
+--- a/plugins/time-language/area/area.cpp
++++ b/plugins/time-language/area/area.cpp
+@@ -379,6 +379,8 @@ QStringList Area::getUserDefaultLanguage() {
+         }
+         if(language.isEmpty() && propertyMap.keys().contains("Language")) {
+             language = propertyMap.find("Language").value().toString();
++	    if(language.isEmpty())
++                language = QLocale::system().name();
+         }
+     } else {
+         qDebug() << "reply failed";
+-- 
+2.33.0
+

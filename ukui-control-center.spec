@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.4
-Release:        11
+Release:        12
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -13,6 +13,7 @@ Patch04:        0004-disable-the-str-of-password-check.patch
 Patch05:        0005-Fix-the-problem-of-displaying-none-in-the-interface-version-information.patch
 Patch06:        0006-fix-the-problem-that-the-new-user-in-the-control-panel-is-stuck.patch
 Patch07:        0007-modify-icon-theme-not-display.patch
+Patch08:        0008-Fix-preferred-language-default-errors.patch
 
 BuildRequires: qt5-qtsvg-devel
 BuildRequires: qt5-qtbase-devel
@@ -117,6 +118,7 @@ Suggests: ukui-settings-daemon
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 
 %build
 qmake-qt5
@@ -165,6 +167,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jul 18 2022 peijiankang <peijiankang@kylinos.cn> - 3.0.4-12
+- Fix preferred language default errors 
+
 * Tue Jun 28 2022 peijiankang <peijiankang@kylinos.cn> - 3.0.4-11
 - update about.png for openEuler
 

@@ -167,8 +167,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Mon Jul 18 2022 peijiankang <peijiankang@kylinos.cn> - 3.0.4-11
-- Fix preferred language default errors
+* Tue Jun 28 2022 peijiankang <peijiankang@kylinos.cn> - 3.0.4-11
+- update about.png for openEuler
 
 * Tue Apr 19 2022 pei-jiankang <peijiankang@kylinos.cn> - 3.0.4-10
 - modify ukui-control-center install error

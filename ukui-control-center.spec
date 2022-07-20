@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.4
-Release:        12
+Release:        13
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -14,6 +14,7 @@ Patch05:        0005-Fix-the-problem-of-displaying-none-in-the-interface-version
 Patch06:        0006-fix-the-problem-that-the-new-user-in-the-control-panel-is-stuck.patch
 Patch07:        0007-modify-icon-theme-not-display.patch
 Patch08:        0008-Fix-preferred-language-default-errors.patch
+Patch09:        0009-Fix-the-resolution-donotsave-button-fails.patch
 
 BuildRequires: qt5-qtsvg-devel
 BuildRequires: qt5-qtbase-devel
@@ -119,6 +120,7 @@ Suggests: ukui-settings-daemon
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
 
 %build
 qmake-qt5
@@ -167,6 +169,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jul 20 2022 peijiankang <peijiankang@kylinos.cn> - 3.0.4-13
+- Fix the resolution donotsave button fails
+
 * Mon Jul 18 2022 peijiankang <peijiankang@kylinos.cn> - 3.0.4-12
 - Fix preferred language default errors
 

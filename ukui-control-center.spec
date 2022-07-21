@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.4
-Release:        13
+Release:        14
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -169,6 +169,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Jul 21 2022 peijiankang <peijiankang@kylinos.cn> - 3.0.4-14
+- rebuild
+
 * Wed Jul 20 2022 peijiankang <peijiankang@kylinos.cn> - 3.0.4-13
 - Fix the resolution donotsave button fails
 

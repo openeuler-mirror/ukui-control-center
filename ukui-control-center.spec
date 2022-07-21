@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        6
+Release:        7
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -143,6 +143,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/polkit-1/actions/org.ukui.groupmanager.policy
 
 %changelog
+* Wed Jul 20 2022 peijiankang <peijiankang@kylinos.cn> - 3.0.1-7
+- rebuild
+
 * Tue Apr 19 2022 pei-jiankang <peijiankang@kylinos.cn> - 3.0.1-6
 - modify ukui-control-center install error
 

@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        26
+Release:        27
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -97,6 +97,7 @@ Suggests: ukui-settings-daemon
 
 Patch01:Modify-the-icon-displayed-on-the-tray.patch
 Patch02:Add-dependency-ddcutil.patch
+Patch03:modify-displayed-size-after-the-installation-and-download-of-system-update.patch
 
 %description
  The UKUI control center contains configuration applets for the UKUI desktop,
@@ -108,6 +109,7 @@ Patch02:Add-dependency-ddcutil.patch
 %setup -q
 %patch01 -p1
 %patch02 -p1
+%patch03 -p1
 
 %build
 qmake-qt5
@@ -155,6 +157,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jul 29 2022 tanyulong <tanyulong@kylinos.cn> - 3.0.1-27
+- modify displayed size after the installation and download of system update completed
+
 * Thu Jul 28 2022 tanyulong <tanyulong@kylinos.cn> - 3.0.1-26
 - add dependency ddcutil to make HDMI brightness adjustment available
 

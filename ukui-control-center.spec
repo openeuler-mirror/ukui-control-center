@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
-Version:        3.0.1
-Release:        25
+Version:        3.0.4
+Release:        1
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -95,7 +95,6 @@ Suggests: ukui-screensaver
 Suggests: ukui-settings-daemon
 #Suggests: qt5-qtgraphicaleffects
 
-Patch01:Modify-the-icon-displayed-on-the-tray.patch
 
 %description
  The UKUI control center contains configuration applets for the UKUI desktop,
@@ -105,7 +104,6 @@ Patch01:Modify-the-icon-displayed-on-the-tray.patch
 
 %prep
 %setup -q
-%patch01 -p1
 
 %build
 qmake-qt5
@@ -121,8 +119,8 @@ mkdir -p %{buildroot}/etc/xdg/autostart/
 set -e
 glib-compile-schemas /usr/share/glib-2.0/schemas/ &> /dev/null ||:
 
-chown root:root /usr/bin/checkuserpwd
-chmod u+s /usr/bin/checkuserpwd
+chown root:root /usr/bin/checkUserPwd
+chmod u+s /usr/bin/checkUserPwd
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -139,11 +137,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/ukui/faces/*
 %{_datadir}/ukui-control-center/shell/res/i18n
 %{_bindir}/group-manager-server
-%{_bindir}/checkuserpwd
 %{_bindir}/checkUserPwd
 %{_datadir}/polkit-1/actions/org.ukui.groupmanager.policy
 %{_sysconfdir}/pam.d/control-center
 /lib/systemd/system/ukui-group-manager.service
+%{_bindir}/changeotheruserpwd
+%{_bindir}/changeuserpwd
 %{_bindir}/childCheckpwdwithPAM
 %{_bindir}/ukui-control-center-session
 %{_datadir}/dbus-1/services/org.ukui.ukcc.session.service
@@ -153,6 +152,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Aug 1 2022 peijiankang <peijiankang@kylinos.cn> - 3.0.4-1
+- update to upstream version 3.0.4-1
+
 * Tue Jun 28 2022 peijiankang <peijiankang@kylinos.cn> - 3.0.1-25
 - update about.png for openEuler
 

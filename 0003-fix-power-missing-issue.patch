@@ -1,0 +1,29 @@
+diff -Naur ukui-control-center-3.0.4/shell/mainwindow.cpp ukui-control-center-3.0.4-/shell/mainwindow.cpp
+--- ukui-control-center-3.0.4/shell/mainwindow.cpp	2021-11-19 10:02:39.000000000 +0800
++++ ukui-control-center-3.0.4-/shell/mainwindow.cpp	2022-03-02 15:52:56.715867011 +0800
+@@ -794,7 +794,7 @@
+ bool MainWindow::isExitsCloudAccount() {
+     QProcess *wifiPro = new QProcess();
+     QString shellOutput = "";
+-    wifiPro->start("dpkg -l  | grep kylin-sso-client");
++    wifiPro->start("rpm -qa|grep kylin-sso-client");
+     wifiPro->waitForFinished();
+     QString output = wifiPro->readAll();
+     shellOutput += output;
+@@ -811,14 +811,14 @@
+ bool MainWindow::isExitsPower()
+ {
+     QProcess *process = new QProcess;
+-    process->start("dpkg -l ukui-power-manager");
++    process->start("rpm -q ukui-power-manager");
+     process->waitForFinished();
+ 
+     QByteArray ba = process->readAllStandardOutput();
+     delete process;
+     QString mOutput = QString(ba.data());
+ 
+-    return mOutput.contains("ii", Qt::CaseSensitive) ? true : false;
++    return mOutput.contains("ukui-power-manager", Qt::CaseSensitive) ? true : false;
+ }
+ 
+ bool MainWindow::dblOnEdge(QMouseEvent *event) {

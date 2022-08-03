@@ -1,0 +1,30 @@
+From 56af3614f31d303d2664850b8ca9c541cdf0258c Mon Sep 17 00:00:00 2001
+From: pei-jiankang <peijiankang@kylinos.cn>
+Date: Tue, 1 Mar 2022 14:33:45 +0800
+Subject: [PATCH] modify version-info error
+
+---
+ plugins/messages-task/about/about.cpp | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/plugins/messages-task/about/about.cpp b/plugins/messages-task/about/about.cpp
+index e675232..e29c227 100644
+--- a/plugins/messages-task/about/about.cpp
++++ b/plugins/messages-task/about/about.cpp
+@@ -197,6 +197,13 @@ void About::setupVersionCompenent()
+                     version = rx.cap(1);
+                 }
+             }
++	    else if(str.contains("VERSION=")) {
++                QRegExp rx("VERSION=\"(.*)\"$");
++                int pos = rx.indexIn(str);
++                if (pos > -1) {
++                    version = rx.cap(1);
++                }
++            }
+         }
+     }
+ 
+-- 
+2.33.0
+

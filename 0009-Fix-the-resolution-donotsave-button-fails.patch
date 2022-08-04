@@ -1,0 +1,35 @@
+From 934fc1be1565d019b98373954551e81187096960 Mon Sep 17 00:00:00 2001
+From: peijiankang <peijiankang@kylinos.cn>
+Date: Wed, 20 Jul 2022 17:41:12 +0800
+Subject: [PATCH] Fix the resolution donotsave button fails
+
+---
+ plugins/system/display/widget.cpp | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/plugins/system/display/widget.cpp b/plugins/system/display/widget.cpp
+index 642114e..bb7fcf6 100644
+--- a/plugins/system/display/widget.cpp
++++ b/plugins/system/display/widget.cpp
+@@ -1707,12 +1707,12 @@ void Widget::initConnection()
+         applyNightModeSlot();
+     });
+ 
+-    QDBusConnection::sessionBus().connect(QString(),
+-                                              QString("/"),
+-                                              "org.ukui.ukcc.session.interface",
+-                                              "screenChanged",
+-                                              this,
+-                                              SLOT(kdsScreenchangeSlot(QString)));
++//    QDBusConnection::sessionBus().connect(QString(),
++//                                              QString("/"),
++//                                              "org.ukui.ukcc.session.interface",
++//                                              "screenChanged",
++//                                              this,
++//                                              SLOT(kdsScreenchangeSlot(QString)));
+ 
+ 
+     QDBusConnection::sessionBus().connect(QString(),
+-- 
+2.33.0
+

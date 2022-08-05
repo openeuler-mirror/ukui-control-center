@@ -1,0 +1,34 @@
+From 8a4cd15110db4e68e94a5446fa110e87e8158b1d Mon Sep 17 00:00:00 2001
+From: tanyulong2021 <tanyulong@kylinos.cn>
+Date: Thu, 4 Aug 2022 11:09:33 +0800
+Subject: [PATCH] fix and update translation
+
+---
+ plugins/account/networkaccount/maindialog.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/plugins/account/networkaccount/maindialog.cpp b/plugins/account/networkaccount/maindialog.cpp
+index e422635..7c826cb 100644
+--- a/plugins/account/networkaccount/maindialog.cpp
++++ b/plugins/account/networkaccount/maindialog.cpp
+@@ -378,7 +378,7 @@ QString MainDialog::messagebox(const int &code) const {
+     case 500:ret = tr("Failed due to server error!");break;
+     case 501:ret = tr("Please check your information!");break;
+     case 502:ret = tr("User existing!");break;
+-    case 503:ret = tr("User doesn't exist!");break;
++    case 503:ret = tr("Account or password error");break;
+     case 504:ret = tr("Network can not reach!");break;
+     case 511:ret = tr("Account or password error!");break;
+     case 610:ret = tr("Phone number already in used!");break;
+@@ -386,7 +386,7 @@ QString MainDialog::messagebox(const int &code) const {
+     case 612:ret = tr("Your are reach the limit!");break;
+     case 613:ret = tr("Please check your phone number!");break;
+     case 614:ret = tr("Please check your code!");break;
+-    case 615:ret = tr("Account doesn't exist!");break;
++    case 615:ret = tr("Account or password error");break;
+     case 616:ret = tr("User has bound the phone!");break;
+     case 619:ret = tr("Sending code error occurred!");break;
+     case 632:ret = tr("Phone code is expired!");break;
+-- 
+2.33.0
+

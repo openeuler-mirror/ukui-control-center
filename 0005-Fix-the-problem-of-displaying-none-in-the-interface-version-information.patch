@@ -1,0 +1,41 @@
+From 5fde797a955ccf550c034a509208e6bbddd037a2 Mon Sep 17 00:00:00 2001
+From: huayadong <huayadong@kylinos.cn>
+Date: Wed, 9 Mar 2022 15:54:43 +0800
+Subject: [PATCH] ssssssss
+
+---
+ shell/ukccabout.cpp | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
+
+diff --git a/shell/ukccabout.cpp b/shell/ukccabout.cpp
+index 9fb591b..416e251 100644
+--- a/shell/ukccabout.cpp
++++ b/shell/ukccabout.cpp
+@@ -148,21 +148,16 @@ QString UkccAbout::getUkccVersion() {
+     char *q = NULL;
+     QString version = "none";
+ 
+-    pp = popen("dpkg -l  ukui-control-center | grep  ukui-control-center", "r");
++    pp = popen("rpm -qa ukui-control-center", "r");
+     if(NULL == pp)
+         return version;
+ 
+     while((read = getline(&line, &len, pp)) != -1){
+         q = strrchr(line, '\n');
+         *q = '\0';
+-
+         QString content = line;
+-        QStringList list = content.split(" ");
+-
+-        list.removeAll("");
+-
+-        if (list.size() >= 3)
+-            version = list.at(2);
++        QStringList list = content.split("-");
++        version = list.at(3);
+     }
+ 
+     free(line);
+-- 
+2.33.0
+

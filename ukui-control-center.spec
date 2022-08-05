@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.4
-Release:        2
+Release:        3
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -81,6 +81,7 @@ Requires: qt5-qtgraphicaleffects
 Requires: qt5-qtquickcontrols
 
 Patch0:  0001-modify-version-info-error.patch
+Patch1:  0002-modify-area-info-display-error.patch
 
 Requires: ddcutil
 Requires: glib2
@@ -107,6 +108,7 @@ Suggests: ukui-settings-daemon
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 qmake-qt5
@@ -155,6 +157,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Aug 5 2022 huayadong <huayadong@kylinos.cn> - 3.0.4-3
+- modify area-info display error
+
 * Wed Aug 03 2022 huayadong <huayadong@kylinos.cn> - 3.0.4-2
 - modify version info error
 

@@ -1,0 +1,25 @@
+From a809deb7301283abc9d38b7fe7f0087fb499e15b Mon Sep 17 00:00:00 2001
+From: tanyulong2021 <tanyulong@kylinos.cn>
+Date: Mon, 8 Aug 2022 10:37:26 +0800
+Subject: [PATCH] update translations
+
+---
+ shell/res/i18n/zh_CN.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/shell/res/i18n/zh_CN.ts b/shell/res/i18n/zh_CN.ts
+index 472e46f..d01fdca 100644
+--- a/shell/res/i18n/zh_CN.ts
++++ b/shell/res/i18n/zh_CN.ts
+@@ -2952,7 +2952,7 @@ folder will be deleted!</source>
+     <message>
+         <location filename="../../utils/keyvalueconverter.cpp" line="64"/>
+         <source>Update</source>
+-        <translation>更新</translation>
++        <translation>安全与更新</translation>
+     </message>
+     <message>
+         <location filename="../../utils/keyvalueconverter.cpp" line="67"/>
+-- 
+2.33.0
+

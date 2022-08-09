@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.1
-Release:        28
+Release:        29
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -99,6 +99,7 @@ Patch01:Modify-the-icon-displayed-on-the-tray.patch
 Patch02:Add-dependency-ddcutil.patch
 Patch03:modify-displayed-size-after-the-installation-and-download-of-system-update.patch
 Patch04:fix-and-update-translation.patch
+Patch05:update-and-modify-translations.patch
 
 %description
  The UKUI control center contains configuration applets for the UKUI desktop,
@@ -112,6 +113,7 @@ Patch04:fix-and-update-translation.patch
 %patch02 -p1
 %patch03 -p1
 %patch04 -p1
+%patch05 -p1
 
 %build
 qmake-qt5
@@ -159,6 +161,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Aug 08 2022 tanyulong <tanyulong@kylinos.cn> - 3.0.1-29
+- update and modify translations
+
 * Thu Aug 04 2022 tanyulong <tanyulong@kylinos.cn> - 3.0.1-28
 - fix and update translation
 

@@ -1,0 +1,59 @@
+From 67d91670a337d97b0ceab43ba20c886a50618e90 Mon Sep 17 00:00:00 2001
+From: peijiankang <peijiankang@kylinos.cn>
+Date: Tue, 18 Oct 2022 11:27:00 +0800
+Subject: [PATCH] Fix terminal garbled characters
+
+---
+ plugins/time-language/area/area.cpp | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/plugins/time-language/area/area.cpp b/plugins/time-language/area/area.cpp
+index 1c10b4e..35777bc 100644
+--- a/plugins/time-language/area/area.cpp
++++ b/plugins/time-language/area/area.cpp
+@@ -229,7 +229,7 @@ void Area::initLanguage()
+ 
+     QStringList res = getUserDefaultLanguage();
+     QString lang = res.at(1);
+-    int langIndex = lang.split(':').at(0) == "zh_CN" ? 0 : 1;
++    int langIndex = lang.split(':').at(0) == "zh_CN.UTF-8" ? 0 : 1;
+ 
+     if (0 == langIndex) {
+         chineseFrame->showSelectedIcon(true);
+@@ -244,13 +244,13 @@ void Area::initLanguage()
+ 
+     connect(chineseFrame, &LanguageFrame::clicked, this, [=](){
+         englishFrame->showSelectedIcon(false);
+-        m_areaInterface->call("SetLanguage","zh_CN");
++        m_areaInterface->call("SetLanguage","zh_CN.UTF-8");
+         showMessageBox(2);
+     });
+ 
+     connect(englishFrame, &LanguageFrame::clicked, this, [=](){
+         chineseFrame->showSelectedIcon(false);
+-        m_areaInterface->call("SetLanguage","en_US");
++        m_areaInterface->call("SetLanguage","en_US.UTF-8");
+         showMessageBox(2);
+     });
+ }
+@@ -261,7 +261,7 @@ void Area::initComponent() {
+ 
+     QStringList res = getUserDefaultLanguage();
+     QString lang = res.at(1);
+-    int langIndex = lang.split(':').at(0) == "zh_CN" ? 1 : 0;
++    int langIndex = lang.split(':').at(0) == "zh_CN.UTF-8" ? 1 : 0;
+     int formatIndex = res.at(0) == "zh_CN.UTF-8" ? 1 : 0;
+    // ui->langcomboBox->setCurrentIndex(langIndex);
+     ui->countrycomboBox->setCurrentIndex(langIndex);
+@@ -380,7 +380,7 @@ QStringList Area::getUserDefaultLanguage() {
+         if(language.isEmpty() && propertyMap.keys().contains("Language")) {
+             language = propertyMap.find("Language").value().toString();
+ 	    if(language.isEmpty())
+-                language = QLocale::system().name();
++                language = QLocale::system().name()+ ".UTF-8";
+         }
+     } else {
+         qDebug() << "reply failed";
+-- 
+2.36.1
+

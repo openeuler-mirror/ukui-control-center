@@ -1,91 +1,55 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
-Version:        3.0.1
-Release:        29
+Version:        3.1.2
+Release:        1
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
 Source0:        %{name}-%{version}.tar.gz
+Patch01:        0001-fix-compile-error-of-ukui-control-center.patch
 
 BuildRequires: qt5-qtsvg-devel
-BuildRequires: qt5-qtbase-devel
 BuildRequires: gsettings-qt-devel
 BuildRequires: glib2-devel
 BuildRequires: libmatekbd-devel
 BuildRequires: qt5-qtx11extras-devel
 BuildRequires: libxklavier-devel
-BuildRequires: kf5-kwindowsystem-devel
-BuildRequires: kf5-kwidgetsaddons-devel
-BuildRequires: kf5-kconfig-devel
-BuildRequires: kf5-kconfigwidgets-devel
-BuildRequires: kf5-ki18n-devel
 BuildRequires: libkscreen-qt5-devel
-BuildRequires: qt5-qtdeclarative-devel
-BuildRequires: dconf-devel
-BuildRequires: edid-decode
-BuildRequires: redshift
-BuildRequires: libmatemixer-devel
-BuildRequires: libqtxdg-devel
-BuildRequires: qt5-qtmultimedia-devel
-BuildRequires: libxml2-devel
-BuildRequires: libcanberra-devel
-BuildRequires: kf5-kcoreaddons-devel
-BuildRequires: kf5-kguiaddons-devel
-BuildRequires: mate-desktop-devel
-BuildRequires: libX11-devel
-BuildRequires: libxkbcommon-devel
-BuildRequires: libxkbfile-devel
-BuildRequires: boost-devel
-BuildRequires: libxcb-devel
-BuildRequires: qt5-linguist
-BuildRequires: polkit-qt5-1-devel
-BuildRequires: pam-devel
-BuildRequires: systemd-devel
-
+BuildRequires: kf5-ki18n-devel
+BuildRequires: kf5-kwindowsystem-devel
 BuildRequires: kf5-kxmlgui-devel
 BuildRequires: kf5-kglobalaccel-devel
-BuildRequires: kf5-bluez-qt-devel
-BuildRequires: opencv
-BuildRequires: libddcutil-devel
-BuildRequires: upower-devel
+BuildRequires: qt5-qtdeclarative-devel
+BuildRequires: dconf-devel
+BuildRequires: libmatemixer-devel
+BuildRequires: libxml2-devel
+BuildRequires: qt5-qtbase-devel
+BuildRequires: libX11-devel
+BuildRequires: libxkbfile-devel
+BuildRequires: boost-devel
+BuildRequires: qt5-qttools-devel
+BuildRequires: libxcb-devel
+BuildRequires: polkit-qt5-1-devel
+BuildRequires: pulseaudio-libs-devel
 BuildRequires: libpwquality-devel
 BuildRequires: xorg-x11-server-devel
-
-
+BuildRequires: upower-devel
+BuildRequires: pam-devel
+BuildRequires: ukui-interface 
+BuildRequires: mate-desktop-devel
+BuildRequires: libddcutil-devel
+BuildRequires: libkylin-chkname-devel
+BuildRequires: cups-devel
+#compile need  but control is not exist
+BuildRequires: kf5-kguiaddons-devel
 
 Requires: dconf
-Requires: qt5-qtimageformats
-Requires: qt5-qtsvg-devel
-Requires: gsettings-qt-devel
-Requires: glib2-devel
-Requires: libmatekbd-devel
-Requires: qt5-qtx11extras-devel
-Requires: libxklavier-devel
-Requires: kf5-kwindowsystem-devel
-Requires: kf5-kwidgetsaddons-devel
-Requires: kf5-kconfig-devel
-Requires: kf5-kconfigwidgets-devel
-Requires: kf5-ki18n-devel
-Requires: libkscreen-qt5-devel
-Requires: qt5-qtdeclarative-devel
-Requires: dconf-devel
-Requires: edid-decode
-Requires: redshift
-Requires: libmatemixer-devel
-Requires: libqtxdg-devel
-Requires: qt5-qtmultimedia-devel
-Requires: libxml2-devel
-Requires: network-manager-applet
-Requires: libcanberra-devel
-Requires: qt5-qtgraphicaleffects
-Requires: qt5-qtquickcontrols
+Requires: ukui-search 
+Requires: kylin-nm
+Requires: ukui-bluetooth
+Requires: ukui-media 
+Requires: ukui-themes
 
-Requires: ddcutil
-Requires: glib2
-Requires: systemd-pam
-
-
-Recommends: qt5-qtquickcontrols
 
 Suggests: gsettings-desktop-schemas
 Suggests: mate-common
@@ -93,13 +57,7 @@ Suggests: ukui-power-manager
 Suggests: ukui-session-manager
 Suggests: ukui-screensaver
 Suggests: ukui-settings-daemon
-#Suggests: qt5-qtgraphicaleffects
 
-Patch01:Modify-the-icon-displayed-on-the-tray.patch
-Patch02:Add-dependency-ddcutil.patch
-Patch03:modify-displayed-size-after-the-installation-and-download-of-system-update.patch
-Patch04:fix-and-update-translation.patch
-Patch05:update-and-modify-translations.patch
 
 %description
  The UKUI control center contains configuration applets for the UKUI desktop,
@@ -107,13 +65,14 @@ Patch05:update-and-modify-translations.patch
  and mouse properties, sound setup, desktop theme and background, user
  interface properties, screen resolution, and other UKUI parameters.
 
+%package -n libukcc-devel
+Summary:  libukcc
+%description -n libukcc-devel
+The UKUI control center contains configuration applets for the UKUI des allowing to set accessibility configuration, desktop fonts, keyboard and mouse properties, sound setup, desktop theme and background, user interface properties, screen resolution, and other UKUI parameters.
+
 %prep
 %setup -q
 %patch01 -p1
-%patch02 -p1
-%patch03 -p1
-%patch04 -p1
-%patch05 -p1
 
 %build
 qmake-qt5
@@ -129,38 +88,38 @@ mkdir -p %{buildroot}/etc/xdg/autostart/
 set -e
 glib-compile-schemas /usr/share/glib-2.0/schemas/ &> /dev/null ||:
 
-chown root:root /usr/bin/checkuserpwd
-chmod u+s /usr/bin/checkuserpwd
+chown root:root /usr/bin/checkUserPwd
+chmod u+s /usr/bin/checkUserPwd
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %{_sysconfdir}/dbus-1/system.d/*
-%{_bindir}/launchSysDbus
-%{_bindir}/ukui-control-center
-%{_libdir}/ukui-control-center/*
+%{_sysconfdir}/pam.d/*
+/lib/systemd/system/*
+%{_bindir}/*
 %{_datadir}/applications/*
 %{_datadir}/dbus-1/system-services/*
+%{_datadir}/dbus-1/services/*
 %{_datadir}/glib-2.0/schemas/*
-%{_datadir}/locale/zh_CN/LC_MESSAGES/*
-%{_datadir}/ukui/faces/*
-%{_datadir}/ukui-control-center/shell/res/i18n
-%{_bindir}/group-manager-server
-%{_bindir}/checkuserpwd
-%{_bindir}/checkUserPwd
-%{_datadir}/polkit-1/actions/org.ukui.groupmanager.policy
-%{_sysconfdir}/pam.d/control-center
-/lib/systemd/system/ukui-group-manager.service
-%{_bindir}/childCheckpwdwithPAM
-%{_bindir}/ukui-control-center-session
-%{_datadir}/dbus-1/services/org.ukui.ukcc.session.service
 %{_datadir}/kylin-user-guide/data/*
-%{_datadir}/polkit-1/actions/com.control.center.qt.systemdbus.policy
-%{_datadir}/ukui-control-center/shell/res/search.xml
+%{_datadir}/locale/zh_CN/LC_MESSAGES/*
+%{_datadir}/polkit-1/actions/*
+%{_datadir}/ukui/faces/*
+%{_datadir}/ukui-control-center/shell/res/*
+%{_libdir}/ukui-control-center/*
+
+%files -n libukcc-devel
+%{_includedir}/ukcc/interface/*.h
+%{_includedir}/ukcc/widgets/*.h
+%{_libdir}/libukcc*
 
 
 %changelog
+* Mon Dec 5 2022 peijiankang <peijiankang@kylinos.cn> - 3.1.2-1
+- update version to 3.1.2
+
 * Mon Aug 08 2022 tanyulong <tanyulong@kylinos.cn> - 3.0.1-29
 - update and modify translations
 

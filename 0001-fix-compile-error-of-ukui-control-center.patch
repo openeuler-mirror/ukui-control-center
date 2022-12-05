@@ -1,0 +1,24 @@
+From 3cc51117c8b83ae24abf530a88b61c43cf6e59bd Mon Sep 17 00:00:00 2001
+From: peijiankang <peijiankang@kylinos.cn>
+Date: Tue, 1 Nov 2022 12:41:24 +0800
+Subject: [PATCH] fix compile error of ukui-control-center
+
+---
+ translate_generation.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/translate_generation.sh b/translate_generation.sh
+index 7bf4000..cb0c65c 100755
+--- a/translate_generation.sh
++++ b/translate_generation.sh
+@@ -10,6 +10,6 @@ do
+     if [ "$version" == "fedora" ] || [ "$version" == "opensuse-leap" ] || [ "$version" == "opensuse-tumbleweed" ];then
+         lrelease-qt5 "${ts}"
+     else
+-	lrelease "${ts}"
++	lrelease-qt5 "${ts}"
+     fi
+ done
+-- 
+2.36.1
+

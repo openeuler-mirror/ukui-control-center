@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.1.2
-Release:        2
+Release:        3
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -50,6 +50,8 @@ Requires: kylin-nm
 Requires: ukui-bluetooth
 Requires: ukui-media 
 Requires: ukui-themes
+#install need  but control is not exist
+Requires: libkylin-chkname1
 
 
 Suggests: gsettings-desktop-schemas
@@ -117,6 +119,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Dec 9 2022 peijiankang <peijiankang@kylinos.cn> - 3.1.2-3
+- add libkylin-chkname1 Requires to fix useradd error
+
 * Fri Dec 9 2022 peijiankang <peijiankang@kylinos.cn> - 3.1.2-2
 - modify version-info error
 

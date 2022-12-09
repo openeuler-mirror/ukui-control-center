@@ -1,12 +1,13 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.1.2
-Release:        1
+Release:        2
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
 Source0:        %{name}-%{version}.tar.gz
 Patch01:        0001-fix-compile-error-of-ukui-control-center.patch
+Patch02:        0001-modify-version-info-error.patch
 
 BuildRequires: qt5-qtsvg-devel
 BuildRequires: gsettings-qt-devel
@@ -71,8 +72,7 @@ Summary:  libukcc
 The UKUI control center contains configuration applets for the UKUI des allowing to set accessibility configuration, desktop fonts, keyboard and mouse properties, sound setup, desktop theme and background, user interface properties, screen resolution, and other UKUI parameters.
 
 %prep
-%setup -q
-%patch01 -p1
+%autosetup -n %{name}-%{version} -p1
 
 %build
 qmake-qt5
@@ -117,6 +117,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Dec 9 2022 peijiankang <peijiankang@kylinos.cn> - 3.1.2-2
+- modify version-info error
+
 * Mon Dec 5 2022 peijiankang <peijiankang@kylinos.cn> - 3.1.2-1
 - update version to 3.1.2
 

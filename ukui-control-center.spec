@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.4
-Release:        16
+Release:        17
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -143,6 +143,9 @@ glib-compile-schemas /usr/share/glib-2.0/schemas/ &> /dev/null ||:
 chown root:root /usr/bin/checkUserPwd
 chmod u+s /usr/bin/checkUserPwd
 
+gsettings set org.ukui.power-manager sleep-computer-battery 0 &> /dev/null ||:
+gsettings set org.ukui.power-manager sleep-computer-ac 0 &> /dev/null ||:
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -173,6 +176,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Dec 12 2022 douyan <douyan@kylinos.cn> - 3.0.4-17
+- change power default settings
+
 * Tue Oct 18 2022 peijiankang <peijiankang@kylinos.cn> - 3.0.4-16
 - Fix terminal garbled characters 
 

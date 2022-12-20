@@ -1,13 +1,14 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.1.2
-Release:        3
+Release:        4
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
 Source0:        %{name}-%{version}.tar.gz
 Patch01:        0001-fix-compile-error-of-ukui-control-center.patch
 Patch02:        0001-modify-version-info-error.patch
+Patch03:        0003-fix-power-missing-issue.patch
 
 BuildRequires: qt5-qtsvg-devel
 BuildRequires: gsettings-qt-devel
@@ -119,6 +120,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Dec 15 2022 peijiankang <peijiankang@kylinos.cn> - 3.1.2-4
+- fix power missing issue
+
 * Fri Dec 9 2022 peijiankang <peijiankang@kylinos.cn> - 3.1.2-3
 - add libkylin-chkname1 Requires to fix useradd error
 

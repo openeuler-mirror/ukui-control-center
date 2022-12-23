@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.1.2
-Release:        4
+Release:        5
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -9,6 +9,8 @@ Source0:        %{name}-%{version}.tar.gz
 Patch01:        0001-fix-compile-error-of-ukui-control-center.patch
 Patch02:        0001-modify-version-info-error.patch
 Patch03:        0003-fix-power-missing-issue.patch
+Patch05:        0005-Fix-the-problem-of-displaying-none-in-the-interface-version-information.patch
+
 
 BuildRequires: qt5-qtsvg-devel
 BuildRequires: gsettings-qt-devel
@@ -120,6 +122,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Dec 23 2022 peijiankang <peijiankang@kylinos.cn> - 3.1.2-5
+- add patch5: 0005-Fix-the-problem-of-displaying-none-in-the-interface-version-information.patch
+
 * Thu Dec 15 2022 peijiankang <peijiankang@kylinos.cn> - 3.1.2-4
 - fix power missing issue
 

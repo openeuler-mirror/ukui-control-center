@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.4
-Release:        17
+Release:        18
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -128,7 +128,7 @@ Suggests: ukui-settings-daemon
 
 %build
 qmake-qt5
-make -j24
+make -j4
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -145,6 +145,14 @@ chmod u+s /usr/bin/checkUserPwd
 
 gsettings set org.ukui.power-manager sleep-computer-battery 0 &> /dev/null ||:
 gsettings set org.ukui.power-manager sleep-computer-ac 0 &> /dev/null ||:
+
+sed  -i "1iauth    sufficient      pam_succeed_if.so user ingroup nopasswdlogin"   /etc/pam.d/lightdm
+
+result=$(cat /etc/group |grep nopasswdlogin)
+if [[ "$result" = "" ]]
+then
+    groupadd nopasswdlogin
+fi
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -176,6 +184,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Dec 12 2022 huayadong <huayadong@kylinos.cn> - 3.0.4-18
+- fix invalid password free login
+
 * Mon Dec 12 2022 douyan <douyan@kylinos.cn> - 3.0.4-17
 - change power default settings
 

@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.4
-Release:        18
+Release:        19
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -17,6 +17,7 @@ Patch08:        0008-Fix-preferred-language-default-errors.patch
 Patch09:        0009-Fix-the-resolution-donotsave-button-fails.patch
 Patch10:        0010-Fix-the-problem-of-scrambled-shortcut-keys.patch
 Patch11:        0011-Fix-terminal-garbled-characters.patch
+Patch12:        ukui-control-center-3.0.4-fix-invalid-automatic-login.patch
 
 BuildRequires: qt5-qtsvg-devel
 BuildRequires: qt5-qtbase-devel
@@ -125,6 +126,7 @@ Suggests: ukui-settings-daemon
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
+%patch12 -p1
 
 %build
 qmake-qt5
@@ -181,9 +183,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/kylin-user-guide/data/*
 %{_datadir}/polkit-1/actions/com.control.center.qt.systemdbus.policy
 %{_datadir}/ukui-control-center/shell/res/search.xml
+%{_datadir}/lightdm/lightdm.conf.d/95-SeatDefaults.conf
 
 
 %changelog
+* Fri Dec 30 2022 huayadong <huayadong@kylinos.cn> - 3.0.4-19
+- Fix invalid automatic login
+
 * Mon Dec 12 2022 huayadong <huayadong@kylinos.cn> - 3.0.4-18
 - fix invalid password free login
 

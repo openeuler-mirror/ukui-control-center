@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.1.2
-Release:        6
+Release:        7
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -11,6 +11,7 @@ Patch02:        0001-modify-version-info-error.patch
 Patch03:        0003-fix-power-missing-issue.patch
 Patch05:        0005-Fix-the-problem-of-displaying-none-in-the-interface-version-information.patch
 Patch07:        0007-modify-icon-theme-not-display.patch
+Patch08:        ukui-control-center-3.0.4-fix-invalid-automatic-login.patch
 
 
 BuildRequires: qt5-qtsvg-devel
@@ -82,7 +83,7 @@ The UKUI control center contains configuration applets for the UKUI des allowing
 
 %build
 qmake-qt5
-make -j24
+make -j2
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -96,6 +97,12 @@ glib-compile-schemas /usr/share/glib-2.0/schemas/ &> /dev/null ||:
 
 chown root:root /usr/bin/checkUserPwd
 chmod u+s /usr/bin/checkUserPwd
+
+sed  -i "1iauth    sufficient      pam_succeed_if.so user ingroup nopasswdlogin"   /etc/pam.d/lightdm
+groupadd nopasswdlogin &> /dev/null ||:
+
+%postun
+sed  -i "/auth    sufficient      pam_succeed_if.so user ingroup nopasswdlogin/d" /etc/pam.d/lightdm
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -115,6 +122,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/ukui/faces/*
 %{_datadir}/ukui-control-center/shell/res/*
 %{_libdir}/ukui-control-center/*
+%{_datadir}/lightdm/lightdm.conf.d/95-SeatDefaults.conf
 
 %files -n libukcc-devel
 %{_includedir}/ukcc/interface/*.h
@@ -123,6 +131,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Dec 30 2022 huayadong <huayadong@kylinos.cn> - 3.1.2-7
+- Fix invalid automatic login, fix invalid password free login
+
 * Thu Dec 29 2022 peijiankang <peijiankang@kylinos.cn> - 3.1.2-6
 - modify icon theme not display
 

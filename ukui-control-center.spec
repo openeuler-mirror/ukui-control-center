@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.4
-Release:        19
+Release:        20
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -150,11 +150,10 @@ gsettings set org.ukui.power-manager sleep-computer-ac 0 &> /dev/null ||:
 
 sed  -i "1iauth    sufficient      pam_succeed_if.so user ingroup nopasswdlogin"   /etc/pam.d/lightdm
 
-result=$(cat /etc/group |grep nopasswdlogin)
-if [[ "$result" = "" ]]
-then
-    groupadd nopasswdlogin
-fi
+groupadd nopasswdlogin &> /dev/null ||:
+
+%postun
+sed  -i "/auth    sufficient      pam_succeed_if.so user ingroup nopasswdlogin/d" /etc/pam.d/lightdm
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -187,6 +186,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Jan 10 2023 huayadong <huayadong@kylinos.cn> - 3.0.4-20
+- repair installation %post warning
+
 * Fri Dec 30 2022 huayadong <huayadong@kylinos.cn> - 3.0.4-19
 - Fix invalid automatic login
 

@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.1.2
-Release:        7
+Release:        8
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -12,7 +12,7 @@ Patch03:        0003-fix-power-missing-issue.patch
 Patch05:        0005-Fix-the-problem-of-displaying-none-in-the-interface-version-information.patch
 Patch07:        0007-modify-icon-theme-not-display.patch
 Patch08:        ukui-control-center-3.0.4-fix-invalid-automatic-login.patch
-
+Patch10:        0010-Fix-the-problem-of-scrambled-shortcut-keys.patch
 
 BuildRequires: qt5-qtsvg-devel
 BuildRequires: gsettings-qt-devel
@@ -83,7 +83,7 @@ The UKUI control center contains configuration applets for the UKUI des allowing
 
 %build
 qmake-qt5
-make -j2
+make -j4
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -131,6 +131,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jan 9 2023 peijiankang <peijiankang@kylinos.cn> - 3.1.2-8
+- add patch10: 0010-Fix-the-problem-of-scrambled-shortcut-keys.patch
+
 * Fri Dec 30 2022 huayadong <huayadong@kylinos.cn> - 3.1.2-7
 - Fix invalid automatic login, fix invalid password free login
 

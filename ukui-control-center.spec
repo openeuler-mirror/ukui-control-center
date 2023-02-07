@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.1.2
-Release:        8
+Release:        9
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -101,6 +101,9 @@ chmod u+s /usr/bin/checkUserPwd
 sed  -i "1iauth    sufficient      pam_succeed_if.so user ingroup nopasswdlogin"   /etc/pam.d/lightdm
 groupadd nopasswdlogin &> /dev/null ||:
 
+gsettings set org.ukui.power-manager sleep-computer-battery 0 &> /dev/null ||:
+gsettings set org.ukui.power-manager sleep-computer-ac 0 &> /dev/null ||:
+
 %postun
 sed  -i "/auth    sufficient      pam_succeed_if.so user ingroup nopasswdlogin/d" /etc/pam.d/lightdm
 
@@ -131,6 +134,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Feb 7 2023 douyan <douyan@kylinos.cn> - 3.1.2-9
+- change power default setting
+
 * Mon Jan 9 2023 peijiankang <peijiankang@kylinos.cn> - 3.1.2-8
 - add patch10: 0010-Fix-the-problem-of-scrambled-shortcut-keys.patch
 

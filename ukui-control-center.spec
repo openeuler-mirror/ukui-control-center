@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.1.2
-Release:        9
+Release:        10
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -13,6 +13,7 @@ Patch05:        0005-Fix-the-problem-of-displaying-none-in-the-interface-version
 Patch07:        0007-modify-icon-theme-not-display.patch
 Patch08:        ukui-control-center-3.0.4-fix-invalid-automatic-login.patch
 Patch10:        0010-Fix-the-problem-of-scrambled-shortcut-keys.patch
+Patch11:	Fix-about-copyright-display-error.patch
 
 BuildRequires: qt5-qtsvg-devel
 BuildRequires: gsettings-qt-devel
@@ -134,6 +135,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Feb 27 2023 tanyulong <tanyulong@kylinos.cn> - 3.1.2-10
+- Fix about copyright display error
+
 * Tue Feb 7 2023 douyan <douyan@kylinos.cn> - 3.1.2-9
 - change power default setting
 

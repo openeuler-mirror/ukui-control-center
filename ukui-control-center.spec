@@ -1,7 +1,6 @@
-%define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.1.2
-Release:        10
+Release:        12
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -13,7 +12,8 @@ Patch05:        0005-Fix-the-problem-of-displaying-none-in-the-interface-version
 Patch07:        0007-modify-icon-theme-not-display.patch
 Patch08:        ukui-control-center-3.0.4-fix-invalid-automatic-login.patch
 Patch10:        0010-Fix-the-problem-of-scrambled-shortcut-keys.patch
-Patch11:	0011-fix-add-group-failed-issue.patch
+Patch11:	0011-Fix-about-copyright-display-error.patch
+Patch12:	0012-fix-add-group-failed-issue.patch
 
 BuildRequires: qt5-qtsvg-devel
 BuildRequires: gsettings-qt-devel
@@ -83,12 +83,12 @@ The UKUI control center contains configuration applets for the UKUI des allowing
 %autosetup -n %{name}-%{version} -p1
 
 %build
-qmake-qt5
-make -j4
+%{qmake_qt5}
+%{make_build}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-make INSTALL_ROOT=%{buildroot} install
+%{make_install} INSTALL_ROOT=%{buildroot}
 
 mkdir -p %{buildroot}/etc/xdg/autostart/
 
@@ -139,8 +139,14 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Wed Mar 01 2023 tanyulong <tanyulong@kylinos.cn> - 3.1.2-10
+* Wed Mar 01 2023 peijiankang <peijiankang@kylinos.cn> - 3.1.2-12
+- add build debuginfo and debugsource
+
+* Wed Mar 01 2023 tanyulong <tanyulong@kylinos.cn> - 3.1.2-11
 - fix add group failed issue
+
+* Mon Feb 27 2023 tanyulong <tanyulong@kylinos.cn> - 3.1.2-10
+- Fix about copyright display error
 
 * Tue Feb 7 2023 douyan <douyan@kylinos.cn> - 3.1.2-9
 - change power default setting

@@ -1,6 +1,6 @@
 Name:           ukui-control-center
 Version:        3.1.2
-Release:        13
+Release:        14
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -15,6 +15,7 @@ Patch10:        0010-Fix-the-problem-of-scrambled-shortcut-keys.patch
 Patch11:	0011-Fix-about-copyright-display-error.patch
 Patch12:	0012-fix-add-group-failed-issue.patch
 Patch13:        0013-Fix-terminal-garbled-characters-when-not-root-user-change-locale-language.patch
+Patch14:        0014-fix-memorysize-of-aboutinfo.patch
 
 BuildRequires: qt5-qtsvg-devel
 BuildRequires: gsettings-qt-devel
@@ -140,6 +141,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Mar 30 2023 peijiankang <peijiankang@kylinos.cn> - 3.1.2-14
+- fix memorysize of aboutinfo
+
 * Fri Mar 17 2023 tanyulong <tanyulong@kylinos.cn> - 3.1.2-13
 - Fix terminal garbled characters when not root user change locale language 
 

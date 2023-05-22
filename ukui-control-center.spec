@@ -1,6 +1,6 @@
 Name:           ukui-control-center
 Version:        3.1.2
-Release:        14
+Release:        15
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -16,6 +16,7 @@ Patch11:	0011-Fix-about-copyright-display-error.patch
 Patch12:	0012-fix-add-group-failed-issue.patch
 Patch13:        0013-Fix-terminal-garbled-characters-when-not-root-user-change-locale-language.patch
 Patch14:        0014-fix-memorysize-of-aboutinfo.patch
+Patch15:        fix-changeOtherUserPasswd-critical-vulnerabilities.patch
 
 BuildRequires: qt5-qtsvg-devel
 BuildRequires: gsettings-qt-devel
@@ -141,6 +142,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon May 22 2023 peijiankang <peijiankang@kylinos.cn> - 3.1.2-15
+- fix changeOtherUserPasswd critical vulnerabilities
+
 * Thu Mar 30 2023 peijiankang <peijiankang@kylinos.cn> - 3.1.2-14
 - fix memorysize of aboutinfo
 

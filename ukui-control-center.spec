@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.4
-Release:        21
+Release:        22
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -18,7 +18,8 @@ Patch09:        0009-Fix-the-resolution-donotsave-button-fails.patch
 Patch10:        0010-Fix-the-problem-of-scrambled-shortcut-keys.patch
 Patch11:        0011-Fix-terminal-garbled-characters.patch
 Patch12:        ukui-control-center-3.0.4-fix-invalid-automatic-login.patch
-Patch13:        0013-fix-critical-vulnerabilities.patch
+Patch13:        fix-changeOtherUserPasswd-critical-vulnerabilities.patch
+Patch14:        fix-createuser-critical-vulnerabilities.patch
 
 BuildRequires: qt5-qtsvg-devel
 BuildRequires: qt5-qtbase-devel
@@ -115,20 +116,7 @@ Suggests: ukui-settings-daemon
  interface properties, screen resolution, and other UKUI parameters.
 
 %prep
-%setup -q
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
+%autosetup -n %{name}-%{version} -p1
 
 %build
 qmake-qt5
@@ -188,8 +176,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon May 22 2023 peijiankang <peijiankang@kylinos.cn> - 3.0.4-22
+- fix createuser critical vulnerabilities
+
 * Mon May 15 2023 peijiankang <peijiankang@kylinos.cn> - 3.0.4-21
-- fix critical vulnerabilities
+- fix changeOtherUserPasswd critical vulnerabilities
 
 * Tue Jan 10 2023 huayadong <huayadong@kylinos.cn> - 3.0.4-20
 - repair installation %post warning

@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Name:           ukui-control-center
 Version:        3.0.4
-Release:        20
+Release:        21
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -18,6 +18,7 @@ Patch09:        0009-Fix-the-resolution-donotsave-button-fails.patch
 Patch10:        0010-Fix-the-problem-of-scrambled-shortcut-keys.patch
 Patch11:        0011-Fix-terminal-garbled-characters.patch
 Patch12:        ukui-control-center-3.0.4-fix-invalid-automatic-login.patch
+Patch13:        0013-fix-critical-vulnerabilities.patch
 
 BuildRequires: qt5-qtsvg-devel
 BuildRequires: qt5-qtbase-devel
@@ -127,6 +128,7 @@ Suggests: ukui-settings-daemon
 %patch10 -p1
 %patch11 -p1
 %patch12 -p1
+%patch13 -p1
 
 %build
 qmake-qt5
@@ -186,6 +188,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon May 15 2023 peijiankang <peijiankang@kylinos.cn> - 3.0.4-21
+- fix critical vulnerabilities
+
 * Tue Jan 10 2023 huayadong <huayadong@kylinos.cn> - 3.0.4-20
 - repair installation %post warning
 

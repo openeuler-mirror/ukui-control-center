@@ -1,28 +1,28 @@
-From 0f33449dc1c22e97331265a6410e9a0a5466d39c Mon Sep 17 00:00:00 2001
-From: pei-jiankang <peijiankang@kylinos.cn>
-Date: Wed, 6 Apr 2022 17:29:15 +0800
+From d155a8511018a478fc55486075761c664913ef34 Mon Sep 17 00:00:00 2001
+From: peijiankang <peijiankang@kylinos.cn>
+Date: Thu, 29 Dec 2022 14:08:05 +0800
 Subject: [PATCH] modify icon theme not display
 
 ---
- plugins/personalized/theme/theme.cpp | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ shell/utils/utils.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/plugins/personalized/theme/theme.cpp b/plugins/personalized/theme/theme.cpp
-index 893db27..59f66af 100644
---- a/plugins/personalized/theme/theme.cpp
-+++ b/plugins/personalized/theme/theme.cpp
-@@ -443,8 +443,9 @@ void Theme::initIconTheme() {
+diff --git a/shell/utils/utils.cpp b/shell/utils/utils.cpp
+index 9c97e3e..24d5f56 100644
+--- a/shell/utils/utils.cpp
++++ b/shell/utils/utils.cpp
+@@ -187,9 +187,9 @@ bool Utils::isCommunity()
+     QString filename = "/etc/os-release";
+     QSettings osSettings(filename, QSettings::IniFormat);
  
-     foreach (QString themedir, themesDir.entryList(QDir::Dirs)) {
+-    QString versionID = osSettings.value("VERSION_ID").toString();
++    QString versionID = osSettings.value("ID").toString();
  
--        if ((Utils::isCommunity() && (!themedir.compare("ukui") || !themedir.compare("ukui-classical")))
--                || (!Utils::isCommunity() && themedir.startsWith("ukui-icon-theme-"))) {
-+        if ((Utils::isCommunity() && (!themedir.compare("ukui") || !themedir.compare("ukui-classical")) )
-+                || (!Utils::isCommunity() && themedir.startsWith("ukui-icon-theme-"))
-+                || (!Utils::isCommunity() && (!themedir.compare("ukui") || !themedir.compare("ukui-classical") || !themedir.compare("ukui-fashion")))) {
-             QDir appsDir = QDir(ICONTHEMEPATH + themedir + "/48x48/apps/");
-             QDir placesDir = QDir(ICONTHEMEPATH + themedir + "/48x48/places/");
-             QDir devicesDir = QDir(ICONTHEMEPATH + themedir + "/48x48/devices/");
+-    if (versionID.compare("22.04", Qt::CaseSensitive)) {
++    if (versionID.compare("openEuler", Qt::CaseSensitive)) {
+         return false;
+     }
+     return true;
 -- 
 2.33.0
 

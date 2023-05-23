@@ -1,38 +1,38 @@
-From 5fde797a955ccf550c034a509208e6bbddd037a2 Mon Sep 17 00:00:00 2001
-From: huayadong <huayadong@kylinos.cn>
-Date: Wed, 9 Mar 2022 15:54:43 +0800
-Subject: [PATCH] ssssssss
+From 1cc7cdb36a52cb242c14e503e8b8b186b3d495d4 Mon Sep 17 00:00:00 2001
+From: peijiankang <peijiankang@kylinos.cn>
+Date: Fri, 23 Dec 2022 16:10:47 +0800
+Subject: [PATCH] Fix the problem of displaying none in the interface version
+ information
 
 ---
- shell/ukccabout.cpp | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ shell/ukccabout.cpp | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/shell/ukccabout.cpp b/shell/ukccabout.cpp
-index 9fb591b..416e251 100644
+index 547d6f3..371fccf 100644
 --- a/shell/ukccabout.cpp
 +++ b/shell/ukccabout.cpp
-@@ -148,21 +148,16 @@ QString UkccAbout::getUkccVersion() {
+@@ -99,7 +99,7 @@ QString UkccAbout::getUkccVersion() {
      char *q = NULL;
      QString version = "none";
  
 -    pp = popen("dpkg -l  ukui-control-center | grep  ukui-control-center", "r");
-+    pp = popen("rpm -qa ukui-control-center", "r");
++    pp = popen("rpm -q  ukui-control-center", "r");
      if(NULL == pp)
          return version;
  
-     while((read = getline(&line, &len, pp)) != -1){
-         q = strrchr(line, '\n');
+@@ -108,12 +108,12 @@ QString UkccAbout::getUkccVersion() {
          *q = '\0';
--
+ 
          QString content = line;
 -        QStringList list = content.split(" ");
--
--        list.removeAll("");
--
--        if (list.size() >= 3)
--            version = list.at(2);
 +        QStringList list = content.split("-");
-+        version = list.at(3);
+ 
+         list.removeAll("");
+ 
+         if (list.size() >= 3)
+-            version = list.at(2);
++            version = list.at(3);
      }
  
      free(line);

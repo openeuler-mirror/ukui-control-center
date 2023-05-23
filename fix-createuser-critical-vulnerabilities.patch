@@ -1,0 +1,53 @@
+From 50f91cb252eea20b210fd6acaa12baa95a5b1e3b Mon Sep 17 00:00:00 2001
+From: peijiankang <peijiankang@kylinos.cn>
+Date: Mon, 22 May 2023 11:13:49 +0800
+Subject: [PATCH] fix createuser critical vulnerabilities
+
+---
+ plugins/account/userinfo/userinfo.cpp | 6 +-----
+ registeredQDbus/sysdbusregister.cpp   | 5 +++++
+ 2 files changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/plugins/account/userinfo/userinfo.cpp b/plugins/account/userinfo/userinfo.cpp
+index e9ee51c..2393366 100644
+--- a/plugins/account/userinfo/userinfo.cpp
++++ b/plugins/account/userinfo/userinfo.cpp
+@@ -934,7 +934,6 @@ void UserInfo::createUser(QString username, QString pwd, QString pin, int atype)
+         return;
+     }
+ 
+-    tmpSysinterface->call("setPid", QCoreApplication::applicationPid());
+     tmpSysinterface->call("createUser", username, username, atype, DEFAULTFACE, pwd);
+ 
+     delete tmpSysinterface;
+@@ -1251,10 +1250,7 @@ void UserInfo::changeUserPwd(QString pwd, QString username){
+         qCritical() << "Create Client Interface Failed When : " << QDBusConnection::systemBus().lastError();
+         return;
+     }
+-    QDBusReply<int> reply = tmpSysinterface->call("setPid", QCoreApplication::applicationPid());
+-    if (reply.isValid()){
+-        tmpSysinterface->call("changeOtherUserPasswd", username, pwd);
+-    }
++    tmpSysinterface->call("changeOtherUserPasswd", username, pwd);
+ 
+     delete tmpSysinterface;
+     tmpSysinterface = nullptr;
+diff --git a/registeredQDbus/sysdbusregister.cpp b/registeredQDbus/sysdbusregister.cpp
+index 077c8d6..bfe267e 100644
+--- a/registeredQDbus/sysdbusregister.cpp
++++ b/registeredQDbus/sysdbusregister.cpp
+@@ -211,6 +211,11 @@ int SysdbusRegister::changeOtherUserPasswd(QString username, QString pwd){
+ }
+ 
+ int SysdbusRegister::createUser(QString name, QString fullname, int accounttype, QString faceicon, QString pwd){
++    //密码校验
++    QDBusConnection conn = connection();
++    QDBusMessage msg = message();
++    _id = conn.interface()->servicePid(msg.service()).value();
++    
+     if (_id == 0){
+         return -1;
+     }
+-- 
+2.39.1
+

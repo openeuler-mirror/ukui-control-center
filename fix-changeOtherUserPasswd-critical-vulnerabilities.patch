@@ -1,58 +1,51 @@
-From a85afbd3022fb63f8356d0260a2a1d976898ff3f Mon Sep 17 00:00:00 2001
+From 41f79e92846945fe6adf55e25e80c38976a9845a Mon Sep 17 00:00:00 2001
 From: peijiankang <peijiankang@kylinos.cn>
-Date: Fri, 19 May 2023 15:56:07 +0800
-Subject: [PATCH] fix critical vulnerabilities
+Date: Mon, 22 May 2023 10:54:44 +0800
+Subject: [PATCH] fix changeOtherUserPasswd critical vulnerabilities
 
 ---
- registeredQDbus/sysdbusregister.cpp | 5 +++++
- registeredQDbus/sysdbusregister.h   | 4 +++-
- 2 files changed, 8 insertions(+), 1 deletion(-)
+ registeredQDbus/sysdbusregister.cpp | 6 ++++--
+ registeredQDbus/sysdbusregister.h   | 2 +-
+ 2 files changed, 6 insertions(+), 3 deletions(-)
 
 diff --git a/registeredQDbus/sysdbusregister.cpp b/registeredQDbus/sysdbusregister.cpp
-index 1aaefbe..077c8d6 100644
+index 8b05278..476923f 100644
 --- a/registeredQDbus/sysdbusregister.cpp
 +++ b/registeredQDbus/sysdbusregister.cpp
-@@ -30,6 +30,7 @@
- #include <QDBusReply>
- #include<QCryptographicHash>
- #include <polkit-qt5-1/polkitqt1-authority.h>
-+#include <QDBusMessage>
- 
- /* qt会将glib里的signals成员识别为宏，所以取消该宏
-  * 后面如果用到signals时，使用Q_SIGNALS代替即可
-@@ -180,6 +181,10 @@ int SysdbusRegister::_changeOtherUserPasswd(QString username, QString pwd){
- }
- 
+@@ -288,7 +288,9 @@ int SysdbusRegister::_changeOtherUserPasswd(QString username, QString pwd){
  int SysdbusRegister::changeOtherUserPasswd(QString username, QString pwd){
-+    //密码校验
+ 
+     //密码校验
+-    if (!checkAuthorization()){
 +    QDBusConnection conn = connection();
 +    QDBusMessage msg = message();
-+    _id = conn.interface()->servicePid(msg.service()).value();
++    if (!checkAuthorization(conn.interface()->servicePid(msg.service()).value())){
+         return 0;
+     }
  
-     if (_id == 0){
-         return -1;
+@@ -356,7 +358,8 @@ bool SysdbusRegister::checkCreateAuthorization()
+     }
+ }
+ 
+-bool SysdbusRegister::checkAuthorization(){
++bool SysdbusRegister::checkAuthorization(qint64 id){
++    _id = id;
+
+     if (_id == 0)
+         return false;
 diff --git a/registeredQDbus/sysdbusregister.h b/registeredQDbus/sysdbusregister.h
-index a513ada..bffc80b 100644
+index 7942715..0aca90d 100644
 --- a/registeredQDbus/sysdbusregister.h
 +++ b/registeredQDbus/sysdbusregister.h
-@@ -28,6 +28,8 @@
- #include <QVector>
- #include <ddcutil_c_api.h>
- #include <ddcutil_types.h>
-+#include <QDBusContext>
-+#include <QDBusConnectionInterface>
+@@ -52,7 +52,7 @@ public:
  
- struct brightInfo {
-     QString serialNum;
-@@ -40,7 +42,7 @@ struct displayInfo {
-     QString             edidHash;      //edid信息的hash值(md5)
- };
- 
--class SysdbusRegister : public QObject
-+class SysdbusRegister : public QObject,QDBusContext
- {
-     Q_OBJECT
- 
+ public:
+     bool checkCreateAuthorization();
+-    bool checkAuthorization();
++    bool checkAuthorization(qint64 id);
+     bool authoriyLogin(qint64 id);
+     bool authoriyAutoLogin(qint64 id);
+     bool authoriyDelete(qint64 id);
 -- 
 2.39.1
 

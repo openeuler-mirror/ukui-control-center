@@ -1,6 +1,6 @@
 Name:           ukui-control-center
 Version:        3.1.2
-Release:        16
+Release:        17
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -143,6 +143,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri May 26 2023 peijiankang <peijiankang@kylinos.cn> - 3.1.2-17
+- sync from upstream 3.1.2+2023-0403
+
 * Mon May 22 2023 peijiankang <peijiankang@kylinos.cn> - 3.1.2-16
 - fix createuser critical vulnerabilities
 

@@ -7,10 +7,10 @@ Subject: [PATCH] xxxxxxxxxxxxxxxxxx
  data/95-SeatDefaults.conf                     |  2 ++
  .../userinfo/qtdbus/userdispatcher.cpp        |  4 ++--
  .../account/userinfo/qtdbus/userdispatcher.h  |  2 +-
- plugins/account/userinfo/userinfo.cpp         | 21 ++++++-------------
- registeredQDbus/sysdbusregister.cpp           | 10 ++++++---
+ plugins/account/userinfo/userinfo.cpp         | 20 ++++++-------------
+ registeredQDbus/sysdbusregister.cpp           | 10 +++++++---
  registeredQDbus/sysdbusregister.h             |  2 +-
- ukui-control-center.pro                       |  6 +++++-
+ ukui-control-center.pro                       |  7 +++++--
  7 files changed, 24 insertions(+), 23 deletions(-)
  create mode 100644 data/95-SeatDefaults.conf
 
@@ -58,10 +58,10 @@ index b498c15..41b2425 100644
      bool get_autoLogin_status();
  
 diff --git a/plugins/account/userinfo/userinfo.cpp b/plugins/account/userinfo/userinfo.cpp
-index a86088b..9727c00 100644
+index 44359cf..ab25591 100644
 --- a/plugins/account/userinfo/userinfo.cpp
 +++ b/plugins/account/userinfo/userinfo.cpp
-@@ -765,11 +765,15 @@ void UserInfo::setUserConnect(){
+@@ -791,11 +791,15 @@ void UserInfo::setUserConnect(){
          Q_UNUSED(checked)
          showChangeGroupDialog();
      });
@@ -77,29 +77,28 @@ index a86088b..9727c00 100644
          QString autoUser = getAutomaticLogin();
          qDebug() << "Current Auto User:" << autoUser;
  
-@@ -783,20 +787,7 @@ void UserInfo::setUserConnect(){
-                 return;
+@@ -826,19 +830,7 @@ void UserInfo::setUserConnect(){
+                 qDebug() << "call setAutoLoginStatus failed" << ret.error();
              }
-         }
+         } else {
+-            QDBusMessage message = QDBusMessage::createMethodCall("org.freedesktop.Accounts",
+-                                                      user.objpath,
+-                                                      "org.freedesktop.Accounts.User",
+-                                                      "SetAutomaticLogin");
 -
--        QDBusMessage message = QDBusMessage::createMethodCall("org.freedesktop.Accounts",
--                                                              user.objpath,
--                                                              "org.freedesktop.Accounts.User",
--                                                              "SetAutomaticLogin");
--        message << checked;
--        QDBusMessage response = QDBusConnection::systemBus().call(message);
+-            message << checked;
+-            QDBusMessage response = QDBusConnection::systemBus().call(message);
+-            if (response.type() == QDBusMessage::ErrorMessage){
 -
--        if (response.type() == QDBusMessage::ErrorMessage){
--
--            autoLoginSBtn->blockSignals(true);
--            autoLoginSBtn->setChecked(!checked);
--            autoLoginSBtn->blockSignals(false);
--        }
+-                autoLoginSBtn->blockSignals(true);
+-                autoLoginSBtn->setChecked(!checked);
+-                autoLoginSBtn->blockSignals(false);
+-            }
 +            userdispatcher->change_user_autologin(checked, user.username);
+         }
      });
  
-     //免密登录
-@@ -981,7 +972,7 @@ bool UserInfo::isLastAdmin(QString uname){
+@@ -1041,7 +1033,7 @@ bool UserInfo::isLastAdmin(QString uname){
  
  QString UserInfo::getAutomaticLogin() {
  
@@ -109,7 +108,7 @@ index a86088b..9727c00 100644
      autoSettings->beginGroup("SeatDefaults");
  
 diff --git a/registeredQDbus/sysdbusregister.cpp b/registeredQDbus/sysdbusregister.cpp
-index d928d41..8b05278 100644
+index 193568d..7f26c97 100644
 --- a/registeredQDbus/sysdbusregister.cpp
 +++ b/registeredQDbus/sysdbusregister.cpp
 @@ -167,7 +167,7 @@ int SysdbusRegister::setNoPwdLoginStatus(bool status,QString username)
@@ -140,7 +139,7 @@ index d928d41..8b05278 100644
      autoSettings->endGroup();
      autoSettings->sync();
 diff --git a/registeredQDbus/sysdbusregister.h b/registeredQDbus/sysdbusregister.h
-index d9fca66..7942715 100644
+index 020c165..0aca90d 100644
 --- a/registeredQDbus/sysdbusregister.h
 +++ b/registeredQDbus/sysdbusregister.h
 @@ -95,7 +95,7 @@ public slots:
@@ -153,23 +152,24 @@ index d9fca66..7942715 100644
      Q_SCRIPTABLE int DeleteUser(qint64 userId, bool removeWhole);
  
 diff --git a/ukui-control-center.pro b/ukui-control-center.pro
-index 39966b2..e5c8556 100644
+index 39966b2..9866f65 100644
 --- a/ukui-control-center.pro
 +++ b/ukui-control-center.pro
-@@ -36,8 +36,12 @@ search_file.files = shell/res/search.xml
+@@ -36,9 +36,12 @@ search_file.files = shell/res/search.xml
  
  INCLUDEPATH += /usr/lib/gcc/aarch64-linux-gnu/9/include/
  
+-INSTALLS += qm_files \
+-            search_file
 +lightdm.files = data/95-SeatDefaults.conf
 +lightdm.path = /usr/share/lightdm/lightdm.conf.d/
-+
- INSTALLS += qm_files \
--            search_file
+ 
++INSTALLS += qm_files \
 +            search_file \
 +            lightdm
- 
  HEADERS += \
      shell/utils/mthread.h \
+     shell/utils/xatom-helper.h
 -- 
-2.33.0
+2.39.1
 

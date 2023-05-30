@@ -11,7 +11,7 @@ diff --git a/group-manager-server/group_manager_server.cpp b/group-manager-serve
 index 974ef68..f8051b6 100644
 --- a/group-manager-server/group_manager_server.cpp
 +++ b/group-manager-server/group_manager_server.cpp
-@@ -100,8 +100,8 @@ bool group_manager_server::add(QString groupName, QString groupId)
+@@ -128,8 +128,8 @@ bool group_manager_server::add(QString groupName, QString groupId)
      QString groupadd = "/usr/sbin/groupadd";
      QString addgroup = "/usr/sbin/addgroup";
      QString command;

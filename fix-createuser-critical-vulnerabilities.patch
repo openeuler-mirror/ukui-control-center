@@ -4,40 +4,10 @@ Date: Mon, 22 May 2023 14:38:31 +0800
 Subject: [PATCH] fix createuser critical vulnerabilities
 
 ---
- plugins/account/userinfo/changeuserpwd.cpp | 5 +----
- plugins/account/userinfo/createusernew.cpp | 1 -
- registeredQDbus/sysdbusregister.cpp        | 7 +++++--
- registeredQDbus/sysdbusregister.h          | 2 +-
- 4 files changed, 7 insertions(+), 8 deletions(-)
+ registeredQDbus/sysdbusregister.cpp | 7 +++++--
+ registeredQDbus/sysdbusregister.h   | 2 +-
+ 2 files changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/plugins/account/userinfo/changeuserpwd.cpp b/plugins/account/userinfo/changeuserpwd.cpp
-index a216449..8017a9b 100644
---- a/plugins/account/userinfo/changeuserpwd.cpp
-+++ b/plugins/account/userinfo/changeuserpwd.cpp
-@@ -421,10 +421,7 @@ void ChangeUserPwd::setupConnect(){
-                 return;
-             }
- 
--            QDBusReply<int> reply = tmpiface.call("setPid", QCoreApplication::applicationPid());
--            if (reply.isValid()){
--                tmpiface.call("changeOtherUserPasswd", name, newPwdLineEdit->text());
--            }
-+            tmpiface.call("changeOtherUserPasswd", name, newPwdLineEdit->text());
- 
-             this->accept();
-         });
-diff --git a/plugins/account/userinfo/createusernew.cpp b/plugins/account/userinfo/createusernew.cpp
-index ae378bf..22542ba 100644
---- a/plugins/account/userinfo/createusernew.cpp
-+++ b/plugins/account/userinfo/createusernew.cpp
-@@ -376,7 +376,6 @@ void CreateUserNew::setConnect(){
- 
-         if (tmpSysinterface.isValid()){
- 
--            tmpSysinterface.call("setPid", QCoreApplication::applicationPid());
-             tmpSysinterface.call("createUser", usernameLineEdit->text(), nicknameLineEdit->text(), typeBtnGroup->checkedId(), DEFAULTFACE, newPwdLineEdit->text());
- 
-         } else {
 diff --git a/registeredQDbus/sysdbusregister.cpp b/registeredQDbus/sysdbusregister.cpp
 index 7f26c97..46766c3 100644
 --- a/registeredQDbus/sysdbusregister.cpp

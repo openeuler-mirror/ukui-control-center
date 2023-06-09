@@ -1,6 +1,6 @@
 Name:           ukui-control-center
 Version:        3.1.2
-Release:        17
+Release:        18
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -18,6 +18,7 @@ Patch13:        0013-Fix-terminal-garbled-characters-when-not-root-user-change-l
 Patch14:        0014-fix-memorysize-of-aboutinfo.patch
 Patch15:        fix-changeOtherUserPasswd-critical-vulnerabilities.patch
 Patch16:        fix-createuser-critical-vulnerabilities.patch
+Patch17:        ukui-control-center-3.1.2-fix-password-changes-for-this-user-and-for-other-use.patch
 
 BuildRequires: qt5-qtsvg-devel
 BuildRequires: gsettings-qt-devel
@@ -102,8 +103,8 @@ glib-compile-schemas /usr/share/glib-2.0/schemas/ &> /dev/null ||:
 
 systemctl enable ukui-group-manager.service
 systemctl start  ukui-group-manager.service
-chown root:root /usr/bin/checkUserPwd
-chmod u+s /usr/bin/checkUserPwd
+#chown root:root /usr/bin/checkUserPwd
+#chmod u+s /usr/bin/checkUserPwd
 
 sed  -i "1iauth    sufficient      pam_succeed_if.so user ingroup nopasswdlogin"   /etc/pam.d/lightdm
 groupadd nopasswdlogin &> /dev/null ||:
@@ -121,7 +122,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %{_sysconfdir}/dbus-1/system.d/*
-%{_sysconfdir}/pam.d/*
 /lib/systemd/system/*
 %{_bindir}/*
 %{_datadir}/applications/*
@@ -143,6 +143,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jun 09 2023 huayadong <huayadong@kylinos.cn> - 3.1.2-18
+- fix password changes for this user and for other use
+
 * Fri May 26 2023 peijiankang <peijiankang@kylinos.cn> - 3.1.2-17
 - sync from upstream 3.1.2+2023-0403
 

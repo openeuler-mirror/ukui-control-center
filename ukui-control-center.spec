@@ -1,6 +1,6 @@
 Name:           ukui-control-center
 Version:        3.1.2
-Release:        17
+Release:        18
 Summary:        utilities to configure the UKUI desktop
 License:        GPL-2+
 URL:            http://www.ukui.org
@@ -18,6 +18,7 @@ Patch13:        0013-Fix-terminal-garbled-characters-when-not-root-user-change-l
 Patch14:        0014-fix-memorysize-of-aboutinfo.patch
 Patch15:        fix-changeOtherUserPasswd-critical-vulnerabilities.patch
 Patch16:        fix-createuser-critical-vulnerabilities.patch
+Patch17:        fix-clang.patch
 
 BuildRequires: qt5-qtsvg-devel
 BuildRequires: gsettings-qt-devel
@@ -143,6 +144,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Jun 20 2023 yoo <sunyuechi@iscas.ac.cn> - 3.1.2-18
+- fix clang build error
+
 * Fri May 26 2023 peijiankang <peijiankang@kylinos.cn> - 3.1.2-17
 - sync from upstream 3.1.2+2023-0403
 
